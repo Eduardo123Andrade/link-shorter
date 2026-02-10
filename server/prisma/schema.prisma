@@ -1,0 +1,38 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Link {
+  id        String   @id @default(dbgenerated("uuid_generate_v7()")) @db.Uuid
+  link      String   @db.Text
+  shortLink String   @unique @db.VarChar(50)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relacionamento com acessos
+  accesses LinkAccess[]
+
+  @@map("links")
+  @@index([shortLink])
+}
+
+model LinkAccess {
+  id         String   @id @default(dbgenerated("uuid_generate_v7()")) @db.Uuid
+  linkId     String   @map("link_id") @db.Uuid
+  accessedAt DateTime @default(now()) @map("accessed_at")
+
+  // Relacionamento com o link
+  link Link @relation(fields: [linkId], references: [id], onDelete: Cascade)
+
+  @@map("link_accesses")
+  @@index([linkId])
+  @@index([accessedAt])
+}
