@@ -3,7 +3,11 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   roots: ['<rootDir>/src'],
-  testMatch: ['**/__tests__/**/*.ts', '**/?(*.)+(spec|test).ts'],
+  testMatch: ['**/__tests__/**/*.test.ts', '**/?(*.)+(spec|test).ts'],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/__tests__/setup/',
+  ],
   transform: {
     '^.+\\.ts$': 'ts-jest',
   },
@@ -17,4 +21,7 @@ module.exports = {
   clearMocks: true,
   coverageDirectory: 'coverage',
   verbose: true,
+  globalTeardown: '<rootDir>/src/__tests__/setup/globalTeardown.ts',
+  setupFilesAfterEnv: ['<rootDir>/src/__tests__/setup/jest.setup.ts'],
+  testTimeout: 10000,
 };
