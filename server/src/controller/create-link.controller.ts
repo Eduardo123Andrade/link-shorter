@@ -17,6 +17,5 @@ export const createLinkController = async (
     link: createdLink.link,
     shortLink: createdLink.shortLink,
     shortUrl: `${request.protocol}://${request.hostname}/${createdLink.shortLink}`,
-    createdAt: createdLink.createdAt,
   });
 };
