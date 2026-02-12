@@ -1,22 +1,16 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { createLink } from "../use-case";
 import { createLinkSchema } from "../schemas";
+import { validateSchema } from "../helpers";
 import { HttpStatus } from "../utils";
-import { z } from "zod";
 
 export const createLinkController = async (
   request: FastifyRequest,
   reply: FastifyReply
 ) => {
-  const parsed = createLinkSchema.safeParse(request.body);
+  const data = validateSchema(createLinkSchema, request.body);
 
-  if (!parsed.success) {
-    return reply
-      .status(HttpStatus.BAD_REQUEST)
-      .send({ errors: z.flattenError(parsed.error).fieldErrors });
-  }
-
-  const createdLink = await createLink(parsed.data);
+  const createdLink = await createLink(data);
 
   return reply.status(HttpStatus.CREATED).send({
     id: createdLink.id,
