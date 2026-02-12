@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import Fastify from 'fastify';
 import { prisma } from './lib/prisma';
-import { linkRoutes } from './routes/link.routes';
+import { linkRouter } from './router';
 
 const app = Fastify({
   logger: true,
@@ -24,7 +24,7 @@ app.get('/health/db', async (request, reply) => {
 });
 
 // Registrar rotas de links
-app.register(linkRoutes);
+app.register(linkRouter);
 
 // Graceful shutdown
 const gracefulShutdown = async () => {
