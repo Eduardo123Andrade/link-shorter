@@ -25,3 +25,23 @@ export const idParamSchema = z.object({
     .string({ message: ERROR_MESSAGES.INVALID_UUID })
     .uuid(ERROR_MESSAGES.INVALID_UUID),
 });
+
+// Response schemas
+export const linkResponseSchema = z.object({
+  id: z.string().uuid(),
+  link: z.string().url(),
+  shortLink: z.string(),
+  shortUrl: z.string(),
+});
+
+export const linkListItemSchema = z.object({
+  id: z.string().uuid(),
+  link: z.string().url(),
+  shortLink: z.string(),
+});
+
+export const linkListResponseSchema = z.array(linkListItemSchema);
+
+export const errorResponseSchema = z.object({
+  errors: z.record(z.string(), z.array(z.string()).optional()),
+});
