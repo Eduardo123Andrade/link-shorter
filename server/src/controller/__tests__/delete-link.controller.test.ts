@@ -1,6 +1,7 @@
 import { deleteLinkController } from "../delete-link.controller";
 import { mockRequest, mockReply } from "./helpers";
 import { HttpStatus } from "../../utils";
+import { ValidationError } from "../../errors";
 
 jest.mock("../../use-case", () => ({
   deleteLink: jest.fn(),
@@ -37,36 +38,36 @@ describe("deleteLinkController", () => {
     expect(reply.send).toHaveBeenCalled();
   });
 
-  it("should return 400 when id is not a valid UUID", async () => {
+  it("should throw ValidationError when id is not a valid UUID", async () => {
     const params = { id: "invalid-uuid" };
     const request = mockRequest({ params });
     const reply = mockReply();
 
-    await deleteLinkController(request, reply);
-
+    await expect(deleteLinkController(request, reply)).rejects.toThrow(
+      ValidationError
+    );
     expect(mockDeleteLink).not.toHaveBeenCalled();
-    expect(reply.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
   });
 
-  it("should return 400 when id is empty", async () => {
+  it("should throw ValidationError when id is empty", async () => {
     const params = { id: "" };
     const request = mockRequest({ params });
     const reply = mockReply();
 
-    await deleteLinkController(request, reply);
-
+    await expect(deleteLinkController(request, reply)).rejects.toThrow(
+      ValidationError
+    );
     expect(mockDeleteLink).not.toHaveBeenCalled();
-    expect(reply.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
   });
 
-  it("should return 400 when id is missing", async () => {
+  it("should throw ValidationError when id is missing", async () => {
     const request = mockRequest({ params: {} });
     const reply = mockReply();
 
-    await deleteLinkController(request, reply);
-
+    await expect(deleteLinkController(request, reply)).rejects.toThrow(
+      ValidationError
+    );
     expect(mockDeleteLink).not.toHaveBeenCalled();
-    expect(reply.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
   });
 
   it("should propagate errors from use case", async () => {

@@ -1,6 +1,7 @@
 import { findLinkByShortLinkController } from "../find-link-by-short-link.controller";
 import { mockRequest, mockReply } from "./helpers";
 import { HttpStatus } from "../../utils";
+import { ValidationError } from "../../errors";
 
 jest.mock("../../use-case", () => ({
   findLinkByShortLink: jest.fn(),
@@ -39,26 +40,26 @@ describe("findLinkByShortLinkController", () => {
     expect(reply.redirect).toHaveBeenCalledWith(mockLink.link);
   });
 
-  it("should return 400 when shortLink has invalid characters", async () => {
+  it("should throw ValidationError when shortLink has invalid characters", async () => {
     const params = { shortLink: "abc 123!" };
     const request = mockRequest({ params });
     const reply = mockReply();
 
-    await findLinkByShortLinkController(request, reply);
-
+    await expect(
+      findLinkByShortLinkController(request, reply)
+    ).rejects.toThrow(ValidationError);
     expect(mockFindLinkByShortLink).not.toHaveBeenCalled();
-    expect(reply.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
   });
 
-  it("should return 400 when shortLink is empty", async () => {
+  it("should throw ValidationError when shortLink is empty", async () => {
     const params = { shortLink: "" };
     const request = mockRequest({ params });
     const reply = mockReply();
 
-    await findLinkByShortLinkController(request, reply);
-
+    await expect(
+      findLinkByShortLinkController(request, reply)
+    ).rejects.toThrow(ValidationError);
     expect(mockFindLinkByShortLink).not.toHaveBeenCalled();
-    expect(reply.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
   });
 
   it("should propagate errors from use case", async () => {

@@ -1,6 +1,7 @@
 import { createLinkController } from "../create-link.controller";
 import { mockRequest, mockReply } from "./helpers";
 import { HttpStatus } from "../../utils";
+import { ValidationError } from "../../errors";
 
 jest.mock("../../use-case", () => ({
   createLink: jest.fn(),
@@ -44,54 +45,51 @@ describe("createLinkController", () => {
     );
   });
 
-  it("should return 400 when link is missing", async () => {
+  it("should throw ValidationError when link is missing", async () => {
     const body = { shortLink: "abc123" };
     const request = mockRequest({ body });
     const reply = mockReply();
 
-    await createLinkController(request, reply);
-
-    expect(mockCreateLink).not.toHaveBeenCalled();
-    expect(reply.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
-    expect(reply.send).toHaveBeenCalledWith(
-      expect.objectContaining({ errors: expect.any(Object) })
+    await expect(createLinkController(request, reply)).rejects.toThrow(
+      ValidationError
     );
+    expect(mockCreateLink).not.toHaveBeenCalled();
   });
 
-  it("should return 400 when shortLink is missing", async () => {
+  it("should throw ValidationError when shortLink is missing", async () => {
     const body = { link: "https://example.com" };
     const request = mockRequest({ body });
     const reply = mockReply();
 
-    await createLinkController(request, reply);
-
+    await expect(createLinkController(request, reply)).rejects.toThrow(
+      ValidationError
+    );
     expect(mockCreateLink).not.toHaveBeenCalled();
-    expect(reply.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
   });
 
-  it("should return 400 when link is not a valid URL", async () => {
+  it("should throw ValidationError when link is not a valid URL", async () => {
     const body = { link: "not-a-url", shortLink: "abc123" };
     const request = mockRequest({ body });
     const reply = mockReply();
 
-    await createLinkController(request, reply);
-
+    await expect(createLinkController(request, reply)).rejects.toThrow(
+      ValidationError
+    );
     expect(mockCreateLink).not.toHaveBeenCalled();
-    expect(reply.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
   });
 
-  it("should return 400 when shortLink has invalid characters", async () => {
+  it("should throw ValidationError when shortLink has invalid characters", async () => {
     const body = { link: "https://example.com", shortLink: "abc 123!" };
     const request = mockRequest({ body });
     const reply = mockReply();
 
-    await createLinkController(request, reply);
-
+    await expect(createLinkController(request, reply)).rejects.toThrow(
+      ValidationError
+    );
     expect(mockCreateLink).not.toHaveBeenCalled();
-    expect(reply.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
   });
 
-  it("should return 400 when shortLink exceeds max length", async () => {
+  it("should throw ValidationError when shortLink exceeds max length", async () => {
     const body = {
       link: "https://example.com",
       shortLink: "a".repeat(51),
@@ -99,19 +97,35 @@ describe("createLinkController", () => {
     const request = mockRequest({ body });
     const reply = mockReply();
 
-    await createLinkController(request, reply);
-
+    await expect(createLinkController(request, reply)).rejects.toThrow(
+      ValidationError
+    );
     expect(mockCreateLink).not.toHaveBeenCalled();
-    expect(reply.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
   });
 
-  it("should return 400 when body is empty", async () => {
+  it("should throw ValidationError when body is empty", async () => {
     const request = mockRequest({ body: {} });
     const reply = mockReply();
 
-    await createLinkController(request, reply);
-
+    await expect(createLinkController(request, reply)).rejects.toThrow(
+      ValidationError
+    );
     expect(mockCreateLink).not.toHaveBeenCalled();
-    expect(reply.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
+  });
+
+  it("should have fieldErrors in ValidationError", async () => {
+    const body = { shortLink: "abc123" };
+    const request = mockRequest({ body });
+    const reply = mockReply();
+
+    try {
+      await createLinkController(request, reply);
+    } catch (error) {
+      expect(error).toBeInstanceOf(ValidationError);
+      expect((error as ValidationError).fieldErrors).toBeDefined();
+      expect((error as ValidationError).statusCode).toBe(
+        HttpStatus.BAD_REQUEST
+      );
+    }
   });
 });
