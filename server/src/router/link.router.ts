@@ -63,7 +63,7 @@ export async function linkRouter(app: FastifyInstance) {
       summary: "Redirect to original URL",
       params: shortLinkParamSchema,
       response: {
-        302: { type: "null" as const, description: "Redirect to original URL" },
+        302: redirectResponseSchema,
         400: errorResponseSchema,
       },
     },
