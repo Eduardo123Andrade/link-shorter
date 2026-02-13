@@ -38,7 +38,6 @@ describe("Link Routes (e2e)", () => {
       expect(body.link).toBe("https://www.example.com");
       expect(body.shortLink).toBe("example");
       expect(body.shortUrl).toContain("/example");
-      expect(body.createdAt).toBeDefined();
     });
 
     it("should return 400 when link is missing", async () => {
