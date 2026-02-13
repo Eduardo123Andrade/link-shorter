@@ -42,6 +42,10 @@ export const linkListItemSchema = z.object({
 
 export const linkListResponseSchema = z.array(linkListItemSchema);
 
+export const noContentResponseSchema = z.null().describe("Link deleted");
+
+export const redirectResponseSchema = z.null().describe("Redirect to original URL");
+
 export const errorResponseSchema = z.object({
   errors: z.record(z.string(), z.array(z.string()).optional()),
 });

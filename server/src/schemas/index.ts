@@ -4,6 +4,8 @@ export {
   idParamSchema,
   linkResponseSchema,
   linkListResponseSchema,
+  noContentResponseSchema,
+  redirectResponseSchema,
   errorResponseSchema,
 } from "./link.schema";
 

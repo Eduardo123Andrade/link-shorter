@@ -12,6 +12,8 @@ import {
   idParamSchema,
   linkResponseSchema,
   linkListResponseSchema,
+  noContentResponseSchema,
+  redirectResponseSchema,
   errorResponseSchema,
 } from "../schemas";
 
@@ -48,7 +50,7 @@ export async function linkRouter(app: FastifyInstance) {
       summary: "Delete a link by ID",
       params: idParamSchema,
       response: {
-        204: { type: "null" as const, description: "Link deleted" },
+        204: noContentResponseSchema,
         400: errorResponseSchema,
       },
     },
