@@ -1,13 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { ZodTypeProvider } from 'fastify-type-provider-zod';
-import { prisma } from '../lib/prisma';
-import { HttpStatus } from '../utils';
-import {
-  healthResponseSchema,
-  healthDbResponseSchema,
-  healthDbErrorResponseSchema,
-} from '../schemas';
 import { HealthCheckController } from '../controller';
+import { healthResponseSchema } from '../schemas';
 
 export async function healthRouter(app: FastifyInstance) {
   const typedApp = app.withTypeProvider<ZodTypeProvider>();
