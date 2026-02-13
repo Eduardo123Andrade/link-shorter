@@ -4,6 +4,10 @@ export enum HttpStatus {
   CREATED = 201,
   NO_CONTENT = 204,
 
+  // Redirection
+  MOVED_PERMANENTLY = 301,
+  FOUND = 302,
+
   // Client Errors
   BAD_REQUEST = 400,
   UNAUTHORIZED = 401,
