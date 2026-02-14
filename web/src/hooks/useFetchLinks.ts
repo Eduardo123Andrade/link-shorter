@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useLinkStore } from '../store/linkStore';
 import { IShortLink } from '../interfaces';
 
-const API_URL = 'http://localhost:3333';
+import { API_URL } from '../lib/api';
 
 interface ApiFetchLink {
   id: string;

@@ -4,7 +4,7 @@ import { IconButton } from "./IconButton";
 import { ShortLink } from "./ShortLink";
 import { useLinkStore } from "../store/linkStore";
 
-const API_URL = "http://localhost:3333";
+import { API_URL } from "../lib/api";
 
 interface LinkItemProps {
   id: string;
