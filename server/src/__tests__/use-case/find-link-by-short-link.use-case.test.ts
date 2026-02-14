@@ -1,7 +1,7 @@
 import { findLinkByShortLink } from '../../use-case/find-link-by-short-link.use-case';
 import { LinkNotFoundError } from '../../errors';
 import { LinkShorterRepository } from '../../repository/link-shorter.repository';
-import { env } from '../../utils';
+
 
 // Mock do repository
 jest.mock('../../repository/link-shorter.repository');
@@ -34,7 +34,7 @@ describe('findLinkByShortLink', () => {
     // Assert
     expect(result).toEqual(mockLink);
     expect(mockRepository.findByShortLink).toHaveBeenCalledWith(
-      `${env.BASE_URL}/abc123`
+      'abc123'
     );
     expect(mockRepository.findByShortLink).toHaveBeenCalledTimes(1);
   });
@@ -49,7 +49,7 @@ describe('findLinkByShortLink', () => {
     ).rejects.toThrow(LinkNotFoundError);
 
     expect(mockRepository.findByShortLink).toHaveBeenCalledWith(
-      `${env.BASE_URL}/nonexistent`
+      'nonexistent'
     );
     expect(mockRepository.findByShortLink).toHaveBeenCalledTimes(1);
   });

@@ -1,5 +1,5 @@
 import { LinkShorterRepository } from '../repository';
-import { generateUuid, env } from '../utils';
+import { generateUuid } from '../utils';
 
 interface CreateLinkInput {
   link: string;
@@ -22,7 +22,7 @@ export const createLink = async (
   const savedLink = await LinkShorterRepository.save({
     id,
     link: input.link,
-    shortLink: `${env.BASE_URL}/${input.shortLink}`,
+    shortLink: input.shortLink,
   });
 
   return savedLink;

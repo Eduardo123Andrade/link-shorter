@@ -9,7 +9,7 @@ jest.mock('../../utils', () => ({
   generateUuid: jest.fn(),
 }));
 
-import { env } from '../../utils';
+
 
 describe('createLink', () => {
   const mockGenerateUuid = uuidUtils.generateUuid as jest.MockedFunction<
@@ -51,7 +51,7 @@ describe('createLink', () => {
     expect(mockSave).toHaveBeenCalledWith({
       id: mockUuid,
       link: input.link,
-      shortLink: `${env.BASE_URL}/${input.shortLink}`,
+      shortLink: input.shortLink,
     });
     expect(result).toEqual(mockSavedLink);
   });
