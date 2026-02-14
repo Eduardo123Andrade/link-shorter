@@ -1,12 +1,11 @@
-import Fastify, { FastifyInstance } from "fastify";
+import Fastify, { FastifyInstance } from 'fastify';
 import {
   serializerCompiler,
   validatorCompiler,
-  hasZodFastifySchemaValidationErrors,
-} from "fastify-type-provider-zod";
-import { healthRouter, linkRouter } from "../../router";
-import { DomainError } from "../../errors";
-import { HttpStatus } from "../../utils";
+} from 'fastify-type-provider-zod';
+import { healthRouter } from '../../router/health.router';
+import { linkRouter } from '../../router/link.router';
+import { errorHandler } from '../../errors/error-handler';
 
 export const buildApp = async (): Promise<FastifyInstance> => {
   const app = Fastify({ logger: false });
@@ -14,32 +13,7 @@ export const buildApp = async (): Promise<FastifyInstance> => {
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
 
-  app.setErrorHandler((error, _request, reply) => {
-    if (hasZodFastifySchemaValidationErrors(error)) {
-      const fieldErrors: Record<string, string[]> = {};
-
-      for (const issue of error.validation) {
-        const field = issue.instancePath.replace(/^\//, "") || (issue.params as Record<string, any>)?.issue?.path?.[0] || "unknown";
-        if (!fieldErrors[field]) fieldErrors[field] = [];
-        fieldErrors[field].push(issue.message ?? "Validation error");
-      }
-
-      return reply.status(HttpStatus.BAD_REQUEST).send({
-        errors: fieldErrors,
-      });
-    }
-
-    if (error instanceof DomainError) {
-      return reply.status(error.statusCode).send({
-        error: error.message,
-        ...(("fieldErrors" in error) && { errors: (error as any).fieldErrors }),
-      });
-    }
-
-    return reply.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
-      error: "Internal server error",
-    });
-  });
+  app.setErrorHandler(errorHandler);
 
   app.register(healthRouter);
   app.register(linkRouter);
