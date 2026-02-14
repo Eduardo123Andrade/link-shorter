@@ -8,6 +8,7 @@ import { errorHandler } from './errors/error-handler';
 import { disconnectPrisma } from './lib/prisma';
 import { registerRouter } from './router';
 import { registerSwagger } from './plugins';
+import { setupEventListeners } from './events';
 
 const app = Fastify({
   logger: true,
@@ -25,6 +26,7 @@ app.setErrorHandler(errorHandler);
 
 // Registrar rotas
 registerRouter(app);
+setupEventListeners();
 
 // Graceful shutdown
 const gracefulShutdown = async () => {

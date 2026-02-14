@@ -6,6 +6,7 @@ interface ListAllLinksOutput {
   shortLink: string;
   createdAt: Date;
   updatedAt: Date;
+  accessCount: number;
 }
 
 export const listAllLinks = async (): Promise<ListAllLinksOutput[]> => {

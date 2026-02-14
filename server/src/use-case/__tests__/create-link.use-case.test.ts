@@ -1,11 +1,11 @@
-import { createLink } from "../create-link.use-case";
-import { LinkShorterRepository } from "../../repository/link-shorter.repository";
-import * as uuidUtils from "../../utils";
+import { createLink } from '../create-link.use-case';
+import { LinkShorterRepository } from '../../repository/link-shorter.repository';
+import * as uuidUtils from '../../utils';
 
-jest.mock("../../repository/link-shorter.repository");
-jest.mock("../../utils");
+jest.mock('../../repository/link-shorter.repository');
+jest.mock('../../utils');
 
-describe("createLink", () => {
+describe('createLink', () => {
   const mockGenerateUuid = uuidUtils.generateUuid as jest.MockedFunction<
     typeof uuidUtils.generateUuid
   >;
@@ -17,20 +17,21 @@ describe("createLink", () => {
     jest.clearAllMocks();
   });
 
-  it("should create a new link with generated UUID", async () => {
+  it('should create a new link with generated UUID', async () => {
     // Arrange
     const input = {
-      link: "https://www.example.com/very-long-url",
-      shortLink: "abc123",
+      link: 'https://www.example.com/very-long-url',
+      shortLink: 'abc123',
     };
 
-    const mockUuid = "550e8400-e29b-41d4-a716-446655440000";
+    const mockUuid = '550e8400-e29b-41d4-a716-446655440000';
     const mockSavedLink = {
       id: mockUuid,
       link: input.link,
       shortLink: input.shortLink,
-      createdAt: new Date("2024-01-01"),
-      updatedAt: new Date("2024-01-01"),
+      createdAt: new Date('2024-01-01'),
+      updatedAt: new Date('2024-01-01'),
+      accessCount: 0,
     };
 
     mockGenerateUuid.mockReturnValue(mockUuid);
@@ -49,18 +50,18 @@ describe("createLink", () => {
     expect(result).toEqual(mockSavedLink);
   });
 
-  it("should propagate errors from repository", async () => {
+  it('should propagate errors from repository', async () => {
     // Arrange
     const input = {
-      link: "https://www.example.com/test",
-      shortLink: "test123",
+      link: 'https://www.example.com/test',
+      shortLink: 'test123',
     };
 
-    const mockError = new Error("Database error");
-    mockGenerateUuid.mockReturnValue("mock-uuid");
+    const mockError = new Error('Database error');
+    mockGenerateUuid.mockReturnValue('mock-uuid');
     mockSave.mockRejectedValue(mockError);
 
     // Act & Assert
-    await expect(createLink(input)).rejects.toThrow("Database error");
+    await expect(createLink(input)).rejects.toThrow('Database error');
   });
 });
