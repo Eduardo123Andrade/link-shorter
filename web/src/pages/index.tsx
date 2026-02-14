@@ -1,5 +1,6 @@
 import { ProjectLogo } from "../components/ProjectLogo";
 import { CreateLinkForm } from "../components/CreateLinkForm";
+import { LinkList } from "../components/LinkList";
 
 export default function Home() {
   return (
@@ -10,10 +11,14 @@ export default function Home() {
         </header>
 
         <section className="w-full flex flex-col gap-8 bg-white/10 p-6 rounded-2xl">
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+          <h1 className="text-lg text-gray-200 font-bold tracking-tight sm:text-5xl">
             Novo link
           </h1>
           <CreateLinkForm />
+        </section>
+
+        <section className="w-full">
+          <LinkList />
         </section>
       </main>
     </div>

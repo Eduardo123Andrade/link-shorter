@@ -20,6 +20,7 @@ const button = tv({
     size: {
       default: "h-12",
       sm: "h-10 px-4 text-sm",
+      icon: "h-10 w-10 px-2",
     },
   },
   defaultVariants: {
