@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider   = "prisma-client-js"
   engineType = "binary"
 }
 
@@ -11,17 +11,18 @@ datasource db {
 }
 
 model Link {
-  id        String   @id @default(dbgenerated("uuid_generate_v7()")) @db.Uuid
-  link      String   @db.Text
-  shortLink String   @unique @db.VarChar(50)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id          String   @id @default(dbgenerated("uuid_generate_v7()")) @db.Uuid
+  link        String   @db.Text
+  shortLink   String   @unique @db.VarChar(50)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  accessCount Int      @default(0) @map("access_count")
 
   // Relacionamento com acessos
   accesses LinkAccess[]
 
-  @@map("links")
   @@index([shortLink])
+  @@map("links")
 }
 
 model LinkAccess {
@@ -32,7 +33,7 @@ model LinkAccess {
   // Relacionamento com o link
   link Link @relation(fields: [linkId], references: [id], onDelete: Cascade)
 
-  @@map("link_accesses")
   @@index([linkId])
   @@index([accessedAt])
+  @@map("link_accesses")
 }
