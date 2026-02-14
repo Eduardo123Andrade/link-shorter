@@ -1,4 +1,4 @@
-import { LinkShorterRepository } from "../repository/link-shorter.repository";
+import { LinkShorterRepository } from '../repository';
 
 interface DeleteLinkInput {
   id: string;
