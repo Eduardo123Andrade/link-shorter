@@ -2,7 +2,7 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 import { CheckDatabaseUseCase } from '../use-case';
 import { HttpStatus } from '../utils';
 
-const check = async (request: FastifyRequest, reply: FastifyReply) => {
+const check = async (_request: FastifyRequest, reply: FastifyReply) => {
   const isConnected = await CheckDatabaseUseCase.check();
 
   return reply.status(HttpStatus.OK).send({
