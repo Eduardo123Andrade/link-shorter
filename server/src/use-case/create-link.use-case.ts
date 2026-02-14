@@ -1,5 +1,5 @@
-import { LinkShorterRepository } from "../repository/link-shorter.repository";
-import { generateUuid } from "../utils";
+import { LinkShorterRepository } from '../repository';
+import { generateUuid } from '../utils';
 
 interface CreateLinkInput {
   link: string;

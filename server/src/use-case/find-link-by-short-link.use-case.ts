@@ -1,5 +1,5 @@
-import { LinkShorterRepository } from "../repository/link-shorter.repository";
-import { LinkNotFoundError } from "../errors";
+import { LinkShorterRepository } from '../repository';
+import { LinkNotFoundError } from '../errors';
 
 interface FindLinkByShortLinkInput {
   shortLink: string;
