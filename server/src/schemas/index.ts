@@ -7,10 +7,6 @@ export {
   noContentResponseSchema,
   redirectResponseSchema,
   errorResponseSchema,
-} from "./link.schema";
+} from './link.schema';
 
-export {
-  healthResponseSchema,
-  healthDbResponseSchema,
-  healthDbErrorResponseSchema,
-} from "./health.schema";
+export { healthResponseSchema } from './health.schema';
