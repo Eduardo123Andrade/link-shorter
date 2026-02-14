@@ -37,10 +37,45 @@
   --radius-lg: 10px;
 }
 
+@layer utilities {
+  .text-xl {
+    font-size: 24px;
+    line-height: 32px;
+    font-weight: 700;
+  }
+  .text-lg {
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: 700;
+  }
+  .text-md {
+    font-size: 14px;
+    line-height: 18px;
+    font-weight: 600;
+  }
+  .text-sm {
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 400; /* Regular default, can override with font-semibold */
+  }
+  .text-xs {
+    font-size: 10px;
+    line-height: 14px;
+    font-weight: 400;
+    text-transform: uppercase;
+  }
+}
+
 body {
   background-color: var(--color-gray-900);
   color: var(--color-gray-100);
   font-family: var(--font-sans);
+  
+  /* Default Body Style (Text Md - Regular variant) */
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 400;
+
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
