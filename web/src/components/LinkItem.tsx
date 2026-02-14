@@ -2,6 +2,9 @@ import { CopyIcon } from "@phosphor-icons/react/Copy";
 import { TrashIcon } from "@phosphor-icons/react/Trash";
 import { IconButton } from "./IconButton";
 import { ShortLink } from "./ShortLink";
+import { useLinkStore } from "../store/linkStore";
+
+const API_URL = "http://localhost:3333";
 
 interface LinkItemProps {
   id: string;
@@ -16,12 +19,26 @@ export function LinkItem({
   originalUrl,
   accessCount,
 }: LinkItemProps) {
+  const removeLink = useLinkStore((state) => state.removeLink);
+
   const handleCopy = () => {
     navigator.clipboard.writeText(shortUrl);
   };
 
-  const onDelete = () => {
-    console.log(id);
+  const onDelete = async () => {
+    try {
+      const response = await fetch(`${API_URL}/links/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete link");
+      }
+
+      removeLink(id);
+    } catch (err) {
+      console.error("Failed to delete link:", err);
+    }
   };
 
   return (
