@@ -24,7 +24,7 @@ describe("createLinkController", () => {
     const mockResult = {
       id: "550e8400-e29b-41d4-a716-446655440000",
       link: body.link,
-      shortLink: `http://localhost:3333/${body.shortLink}`,
+      shortLink: body.shortLink,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -39,8 +39,7 @@ describe("createLinkController", () => {
       expect.objectContaining({
         id: mockResult.id,
         link: mockResult.link,
-        shortLink: mockResult.shortLink,
-        shortUrl: mockResult.shortLink,
+        shortLink: `http://localhost:3334/${mockResult.shortLink}`,
       })
     );
   });

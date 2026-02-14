@@ -1,6 +1,6 @@
 import { listAllLinksController } from '../list-all-links.controller';
 import { mockRequest, mockReply } from './helpers';
-import { HttpStatus } from '../../utils';
+import { HttpStatus, env } from '../../utils';
 
 jest.mock('../../use-case', () => ({
   listAllLinks: jest.fn(),
@@ -38,7 +38,12 @@ describe('listAllLinksController', () => {
 
     expect(mockListAllLinks).toHaveBeenCalled();
     expect(reply.status).toHaveBeenCalledWith(HttpStatus.OK);
-    expect(reply.send).toHaveBeenCalledWith(mockLinks);
+    expect(reply.send).toHaveBeenCalledWith(
+      mockLinks.map((link) => ({
+        ...link,
+        shortLink: `${env.BASE_URL}/${link.shortLink}`,
+      }))
+    );
   });
 
   it('should return 200 with empty array when no links exist', async () => {

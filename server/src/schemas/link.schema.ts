@@ -28,16 +28,15 @@ export const idParamSchema = z.object({
 
 // Response schemas
 export const linkResponseSchema = z.object({
-  id: z.string().uuid(),
-  link: z.string().url(),
-  shortLink: z.string(),
-  shortUrl: z.string(),
+  id: z.uuidv7(),
+  link: z.url(),
+  shortLink: z.url(),
 });
 
 export const linkListItemSchema = z.object({
-  id: z.string().uuid(),
-  link: z.string().url(),
-  shortLink: z.string(),
+  id: z.uuidv7(),
+  link: z.url(),
+  shortLink: z.url(),
   accessCount: z.number(),
 });
 

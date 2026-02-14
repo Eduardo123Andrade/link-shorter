@@ -2,7 +2,7 @@ import { FastifyRequest, FastifyReply } from "fastify";
 import { createLink } from "../use-case";
 import { createLinkSchema } from "../schemas";
 import { validateSchema } from "../helpers";
-import { HttpStatus } from "../utils";
+import { HttpStatus, env } from "../utils";
 
 export const createLinkController = async (
   request: FastifyRequest,
@@ -15,7 +15,6 @@ export const createLinkController = async (
   return reply.status(HttpStatus.CREATED).send({
     id: createdLink.id,
     link: createdLink.link,
-    shortLink: createdLink.shortLink,
-    shortUrl: createdLink.shortLink,
+    shortLink: `${env.BASE_URL}/${createdLink.shortLink}`,
   });
 };
