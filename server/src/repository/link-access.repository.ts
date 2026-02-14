@@ -1,7 +1,7 @@
 import { prisma } from '../lib/prisma';
 
 const create = async (linkId: string) => {
-  const [access] = await prisma.$transaction([
+  const [, updatedLink] = await prisma.$transaction([
     prisma.linkAccess.create({
       data: {
         linkId,
@@ -19,7 +19,7 @@ const create = async (linkId: string) => {
     }),
   ]);
 
-  return access;
+  return updatedLink;
 };
 
 export const LinkAccessRepository = {

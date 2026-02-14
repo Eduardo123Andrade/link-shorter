@@ -6,6 +6,6 @@ interface RegisterLinkAccessInput {
 
 export const registerLinkAccess = async ({
   linkId,
-}: RegisterLinkAccessInput): Promise<void> => {
-  await LinkAccessRepository.create(linkId);
+}: RegisterLinkAccessInput): Promise<any> => {
+  return await LinkAccessRepository.create(linkId);
 };

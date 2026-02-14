@@ -9,7 +9,7 @@ import {
 import { errorHandler } from './errors/error-handler';
 import { disconnectPrisma } from './lib/prisma';
 import { registerRouter } from './router';
-import { registerSwagger } from './plugins';
+import { registerSwagger, registerWebSocket } from './plugins';
 import { setupEventListeners } from './events';
 
 const app = Fastify({
@@ -22,16 +22,6 @@ app.register(cors, { origin: true, methods: ['GET', 'POST', 'PUT', 'DELETE'] });
 // Zod type provider
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
-
-// Swagger
-registerSwagger(app);
-
-// Error handler
-app.setErrorHandler(errorHandler);
-
-// Registrar rotas
-registerRouter(app);
-setupEventListeners();
 
 // Graceful shutdown
 const gracefulShutdown = async () => {
@@ -49,6 +39,17 @@ const start = async () => {
   try {
     const port = env.PORT;
     const host = env.HOST;
+
+    // 1. Plugins
+    registerSwagger(app);
+    await registerWebSocket(app);
+
+    // 2. Error handler
+    app.setErrorHandler(errorHandler);
+
+    // 3. Registrar rotas
+    registerRouter(app);
+    setupEventListeners();
 
     await app.listen({ port, host });
     app.log.info(`Server running at http://${host}:${port}`);
