@@ -1,5 +1,6 @@
 import { prisma } from "../lib/prisma";
 import { ICreateLinkInput } from "../interfaces";
+import { LinkNotFoundError } from "../errors";
 
 const save = async (linkData: ICreateLinkInput) => {
   const savedLink = await prisma.link.create({
@@ -18,6 +19,11 @@ const findById = async (id: string) => {
       id,
     },
   });
+
+  if(!link) {
+    throw new LinkNotFoundError();
+  }
+
   return link;
 };
 
@@ -40,6 +46,8 @@ const listAll = async () => {
 };
 
 const deleteById = async (id: string) => {
+  await findById(id);
+  
   const deletedLink = await prisma.link.delete({
     where: {
       id,
