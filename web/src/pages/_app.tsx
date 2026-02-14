@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import localFont from "next/font/local";
+import Head from "next/head";
 
 const openSans = localFont({
   src: [
@@ -31,8 +32,13 @@ const openSans = localFont({
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <div className={`${openSans.variable} antialiased`}>
-      <Component {...pageProps} />
-    </div>
+    <>
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+      <div className={`${openSans.variable} antialiased`}>
+        <Component {...pageProps} />
+      </div>
+    </>
   );
 }

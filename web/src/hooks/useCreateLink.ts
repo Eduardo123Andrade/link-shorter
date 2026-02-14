@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLinkStore } from '../store/linkStore';
 
 export function useCreateLink() {
   const [originalUrl, setOriginalUrl] = useState('');
@@ -6,16 +7,32 @@ export function useCreateLink() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const addLink = useLinkStore((state) => state.addLink);
+
   const handleSubmit = async () => {
+    if (!originalUrl) {
+      setError('Original URL is required');
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     try {
-      // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
       
-      // Mock success
-      console.log('Creating link:', { originalUrl, customSuffix });
+      const newLink = {
+        id: crypto.randomUUID(),
+        shortUrl: customSuffix,
+        originalUrl,
+        accessCount: 0,
+      };
+
+      addLink(newLink);
+      
+      setOriginalUrl('');
+      setCustomSuffix('');
+      
     } catch (err) {
       setError('Failed to create link');
     } finally {

@@ -1,0 +1,1 @@
+export {type IShortLink} from './ShortLink'
