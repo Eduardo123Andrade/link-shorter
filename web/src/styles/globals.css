@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+@theme {
+  /* Colors - Rocketseat / Ignite Palette */
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  --color-gray-100: #F9F9FB;
+  --color-gray-200: #E4E6EC;
+  --color-gray-300: #CDCFD5;
+  --color-gray-400: #74798B;
+  --color-gray-500: #4D505C;
+  --color-gray-600: #1F2025;
+  --color-gray-700: #17181C;
+  --color-gray-800: #111217;
+  --color-gray-900: #09090A; /* Deeper black/gray */
+
+  --color-purple-300: #996dff;
+  --color-purple-500: #8257e5; /* Brand */
+  
+  --color-red-500: #f75a68; /* Danger */
+  --color-green-500: #04d361; /* Success */
+  
+  --color-blue-base: #2C46B1;
+  --color-blue-dark: #2C4091;
+
+  --color-danger: #B12C4D;
+
+  /* Fonts */
+  --font-sans: var(--font-open-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+
+  /* Border Radius */
+  --radius-xs: 4px;
+  --radius-sm: 6px; 
+  --radius-md: 8px;
+  --radius-lg: 10px;
+}
+
+@layer utilities {
+  .text-xl {
+    font-size: 24px;
+    line-height: 32px;
+    font-weight: 700;
+  }
+  .text-lg {
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: 700;
+  }
+  .text-md {
+    font-size: 14px;
+    line-height: 18px;
+    font-weight: 600;
+  }
+  .text-sm {
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 400; /* Regular default, can override with font-semibold */
+  }
+  .text-xs {
+    font-size: 10px;
+    line-height: 14px;
+    font-weight: 400;
+    text-transform: uppercase;
+  }
+}
+
+body {
+  background-color: var(--color-gray-900);
+  color: var(--color-gray-100);
+  font-family: var(--font-sans);
+  
+  /* Default Body Style (Text Md - Regular variant) */
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 400;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
