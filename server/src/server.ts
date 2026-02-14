@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { env } from './utils';
 import Fastify from 'fastify';
+import cors from '@fastify/cors';
 import {
   serializerCompiler,
   validatorCompiler,
@@ -14,6 +15,9 @@ import { setupEventListeners } from './events';
 const app = Fastify({
   logger: true,
 });
+
+// CORS
+app.register(cors, { origin: true, methods: ['GET', 'POST', 'PUT', 'DELETE'] });
 
 // Zod type provider
 app.setValidatorCompiler(validatorCompiler);
