@@ -3,28 +3,11 @@ import { EmptyList } from "./EmptyList";
 import { LinkItem } from "./LinkItem";
 import { Separator } from "./Separator";
 
-interface ShortLink {
-  id: string;
-  shortUrl: string;
-  originalUrl: string;
-  accessCount: number;
-}
+import { useLinkStore } from "../store/linkStore";
 
 export function LinkList() {
-  const links: ShortLink[] = [
-    {
-      id: "1",
-      shortUrl: "Portfolio-Dev",
-      originalUrl: "https://devsite.portfolio.com.br/devname-123456",
-      accessCount: 30,
-    },
-    {
-      id: "2",
-      shortUrl: "Rocketseat",
-      originalUrl: "https://rocketseat.com.br",
-      accessCount: 10,
-    },
-  ];
+  const links = useLinkStore((state) => state.links);
+
   const hasLinks = links.length > 0;
 
   const onDownloadCsv = () => {
