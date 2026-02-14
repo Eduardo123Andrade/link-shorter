@@ -3,7 +3,13 @@ import { LinkShorterRepository } from '../../repository/link-shorter.repository'
 import * as uuidUtils from '../../utils';
 
 jest.mock('../../repository/link-shorter.repository');
-jest.mock('../../utils');
+jest.mock('../../utils', () => ({
+  __esModule: true,
+  ...jest.requireActual('../../utils'),
+  generateUuid: jest.fn(),
+}));
+
+import { env } from '../../utils';
 
 describe('createLink', () => {
   const mockGenerateUuid = uuidUtils.generateUuid as jest.MockedFunction<
@@ -45,7 +51,7 @@ describe('createLink', () => {
     expect(mockSave).toHaveBeenCalledWith({
       id: mockUuid,
       link: input.link,
-      shortLink: input.shortLink,
+      shortLink: `${env.BASE_URL}/${input.shortLink}`,
     });
     expect(result).toEqual(mockSavedLink);
   });
