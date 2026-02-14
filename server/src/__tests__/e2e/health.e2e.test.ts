@@ -1,9 +1,9 @@
-import { FastifyInstance } from "fastify";
-import { buildApp } from "./helpers";
-import { HttpStatus } from "../../utils";
-import { disconnectDatabase } from "../setup/test-helpers";
+import { FastifyInstance } from 'fastify';
+import { buildApp } from './helpers';
+import { HttpStatus } from '../../utils';
+import { disconnectDatabase } from '../setup/test-helpers';
 
-describe("Health Routes (e2e)", () => {
+describe('Health Routes (e2e)', () => {
   let app: FastifyInstance;
 
   beforeAll(async () => {
@@ -15,33 +15,18 @@ describe("Health Routes (e2e)", () => {
     await disconnectDatabase();
   });
 
-  describe("GET /health", () => {
-    it("should return 200 with status ok", async () => {
+  describe('GET /health', () => {
+    it('should return 200 with status ok and database connected', async () => {
       const response = await app.inject({
-        method: "GET",
-        url: "/health",
+        method: 'GET',
+        url: '/health',
       });
 
       expect(response.statusCode).toBe(HttpStatus.OK);
-
       const body = response.json();
-      expect(body.status).toBe("ok");
+      expect(body.status).toBe('ok');
+      expect(body.database).toBe('connected');
       expect(body.timestamp).toBeDefined();
-    });
-  });
-
-  describe("GET /health/db", () => {
-    it("should return 200 when database is connected", async () => {
-      const response = await app.inject({
-        method: "GET",
-        url: "/health/db",
-      });
-
-      expect(response.statusCode).toBe(HttpStatus.OK);
-
-      const body = response.json();
-      expect(body.status).toBe("ok");
-      expect(body.database).toBe("connected");
     });
   });
 });
