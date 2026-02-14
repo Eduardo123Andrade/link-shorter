@@ -14,7 +14,7 @@ export function CreateLinkForm() {
   } = useCreateLink();
 
   return (
-    <div className="w-full max-w-xl">
+    <div className="w-full">
       <div className="space-y-4">
         <div className="space-y-2">
           <TextInput

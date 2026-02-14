@@ -25,22 +25,21 @@ export function LinkItem({
   };
 
   return (
-    <div className="group flex items-center justify-between rounded-xl border border-white/5 bg-white/5 p-4 transition-colors hover:border-white/10">
-      <div className="flex w-full max-w-[calc(100%-140px)] flex-col gap-1">
+    <div className="group flex items-center justify-between gap-3 rounded-xl border border-white/5 bg-white/5 p-4 transition-colors hover:border-white/10">
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
         <ShortLink shortUrl={shortUrl} />
         <span className="block w-full truncate text-sm text-gray-400">
           {originalUrl}
         </span>
       </div>
 
-      <div className="flex shrink-0 items-center gap-6">
+      <div className="flex shrink-0 items-center gap-3">
         <span className="whitespace-nowrap text-sm font-medium text-gray-400">
           {accessCount} acesso{accessCount !== 1 ? "s" : ""}
         </span>
 
         <div className="flex items-center gap-2">
           <IconButton onClick={handleCopy} Icon={CopyIcon} title="Copiar link" />
-
           <IconButton onClick={onDelete} Icon={TrashIcon} title="Excluir link" />
         </div>
       </div>
