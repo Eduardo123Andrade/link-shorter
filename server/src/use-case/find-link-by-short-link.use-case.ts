@@ -1,5 +1,6 @@
 import { LinkShorterRepository } from '../repository';
 import { LinkNotFoundError } from '../errors';
+import { env } from '../utils';
 
 interface FindLinkByShortLinkInput {
   shortLink: string;
@@ -16,7 +17,9 @@ interface FindLinkByShortLinkOutput {
 export const findLinkByShortLink = async (
   input: FindLinkByShortLinkInput
 ): Promise<FindLinkByShortLinkOutput> => {
-  const link = await LinkShorterRepository.findByShortLink(input.shortLink);
+  const link = await LinkShorterRepository.findByShortLink(
+    `${env.BASE_URL}/${input.shortLink}`
+  );
 
   if (!link) {
     throw new LinkNotFoundError();
