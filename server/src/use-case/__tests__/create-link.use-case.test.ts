@@ -3,7 +3,13 @@ import { LinkShorterRepository } from '../../repository/link-shorter.repository'
 import * as uuidUtils from '../../utils';
 
 jest.mock('../../repository/link-shorter.repository');
-jest.mock('../../utils');
+jest.mock('../../utils', () => ({
+  __esModule: true,
+  ...jest.requireActual('../../utils'),
+  generateUuid: jest.fn(),
+}));
+
+
 
 describe('createLink', () => {
   const mockGenerateUuid = uuidUtils.generateUuid as jest.MockedFunction<

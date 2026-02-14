@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { listAllLinks } from "../use-case";
-import { HttpStatus } from "../utils";
+import { HttpStatus, env } from "../utils";
 
 export const listAllLinksController = async (
   _request: FastifyRequest,
@@ -8,5 +8,10 @@ export const listAllLinksController = async (
 ) => {
   const links = await listAllLinks();
 
-  return reply.status(HttpStatus.OK).send(links);
+  const formattedLinks = links.map((link) => ({
+    ...link,
+    shortLink: `${env.BASE_URL}/${link.shortLink}`,
+  }));
+
+  return reply.status(HttpStatus.OK).send(formattedLinks);
 };

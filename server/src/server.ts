@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import { env } from './utils';
 import Fastify from 'fastify';
 import {
   serializerCompiler,
@@ -42,8 +43,8 @@ process.on('SIGINT', gracefulShutdown);
 // Start server
 const start = async () => {
   try {
-    const port = Number(process.env.PORT) || 3333;
-    const host = process.env.HOST || '0.0.0.0';
+    const port = env.PORT;
+    const host = env.HOST;
 
     await app.listen({ port, host });
     app.log.info(`Server running at http://${host}:${port}`);

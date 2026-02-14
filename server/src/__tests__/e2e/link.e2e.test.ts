@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify";
 import { buildApp } from "./helpers";
 import { HttpStatus } from "../../utils";
 import { cleanDatabase, disconnectDatabase } from "../setup/test-helpers";
+import { env } from "../../utils";
 
 describe("Link Routes (e2e)", () => {
   let app: FastifyInstance;
@@ -31,13 +32,14 @@ describe("Link Routes (e2e)", () => {
         },
       });
 
+
       expect(response.statusCode).toBe(HttpStatus.CREATED);
 
       const body = response.json();
       expect(body.id).toBeDefined();
       expect(body.link).toBe("https://www.example.com");
-      expect(body.shortLink).toBe("example");
-      expect(body.shortUrl).toContain("/example");
+      expect(body.shortLink).toBe(`${env.BASE_URL}/example`);
+
     });
 
     it("should return 400 when link is missing", async () => {
@@ -163,8 +165,8 @@ describe("Link Routes (e2e)", () => {
       });
 
       const body = response.json();
-      expect(body[0].shortLink).toBe("second");
-      expect(body[1].shortLink).toBe("first");
+      expect(body[0].shortLink).toBe(`${env.BASE_URL}/second`);
+      expect(body[1].shortLink).toBe(`${env.BASE_URL}/first`);
     });
   });
 

@@ -39,8 +39,7 @@ describe("createLinkController", () => {
       expect.objectContaining({
         id: mockResult.id,
         link: mockResult.link,
-        shortLink: mockResult.shortLink,
-        shortUrl: `http://localhost:3333/${mockResult.shortLink}`,
+        shortLink: `http://localhost:3334/${mockResult.shortLink}`,
       })
     );
   });

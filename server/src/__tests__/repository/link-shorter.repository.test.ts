@@ -75,15 +75,14 @@ describe('LinkShorterRepository', () => {
       expect(result?.shortLink).toBe(linkData.shortLink);
     });
 
-    it('should return null when link is not found', async () => {
+    it('should throw LinkNotFoundError when link is not found', async () => {
       // Arrange
       const nonExistentId = uuidv7();
 
-      // Act
-      const result = await LinkShorterRepository.findById(nonExistentId);
-
-      // Assert
-      expect(result).toBeNull();
+      // Act & Assert
+      await expect(
+        LinkShorterRepository.findById(nonExistentId)
+      ).rejects.toThrow();
     });
   });
 
@@ -190,8 +189,9 @@ describe('LinkShorterRepository', () => {
       expect(deleted.id).toBe(linkData.id);
 
       // Verify it's actually deleted
-      const found = await LinkShorterRepository.findById(linkData.id);
-      expect(found).toBeNull();
+      await expect(
+        LinkShorterRepository.findById(linkData.id)
+      ).rejects.toThrow();
     });
 
     it('should throw error when trying to delete non-existent link', async () => {

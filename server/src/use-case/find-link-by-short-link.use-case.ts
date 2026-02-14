@@ -1,6 +1,7 @@
 import { LinkShorterRepository } from '../repository';
 import { LinkNotFoundError } from '../errors';
 
+
 interface FindLinkByShortLinkInput {
   shortLink: string;
 }
