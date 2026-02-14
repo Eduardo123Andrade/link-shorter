@@ -32,7 +32,7 @@ export function LinkList() {
   };
 
   return (
-    <div className="flex w-full flex-col gap-6 rounded-2xl bg-white/10 p-6">
+    <div className="flex w-full flex-col gap-6 rounded-2xl bg-white/10 p-4 sm:p-6">
       <div className="flex items-center justify-between">
         <h2 className="w-full text-xl font-semibold text-gray-100">
           Meus links
