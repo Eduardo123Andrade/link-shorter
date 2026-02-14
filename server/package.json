@@ -10,7 +10,7 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:migrate:test": "dotenv -e .env.test -- prisma migrate deploy",
     "prisma:studio": "prisma studio",
-    "test": "jest",
+    "test": "jest --runInBand",
     "test:watch": "jest --watch",
     "test:setup": "node scripts/setup-test-db.js",
     "docker:up": "docker-compose up -d",

@@ -1,8 +1,8 @@
-import { LinkShorterRepository } from "../../repository/link-shorter.repository";
-import { cleanDatabase, disconnectDatabase } from "../setup/test-helpers";
-import { uuidv7 } from "uuidv7";
+import { LinkShorterRepository } from '../../repository/link-shorter.repository';
+import { cleanDatabase, disconnectDatabase } from '../setup/test-helpers';
+import { uuidv7 } from 'uuidv7';
 
-describe("LinkShorterRepository", () => {
+describe('LinkShorterRepository', () => {
   beforeEach(async () => {
     await cleanDatabase();
   });
@@ -12,13 +12,13 @@ describe("LinkShorterRepository", () => {
     await disconnectDatabase();
   });
 
-  describe("save", () => {
-    it("should save a new link successfully", async () => {
+  describe('save', () => {
+    it('should save a new link successfully', async () => {
       // Arrange
       const linkData = {
         id: uuidv7(),
-        link: "https://www.example.com/very-long-url",
-        shortLink: "abc123",
+        link: 'https://www.example.com/very-long-url',
+        shortLink: 'abc123',
       };
 
       // Act
@@ -33,18 +33,18 @@ describe("LinkShorterRepository", () => {
       expect(result.updatedAt).toBeInstanceOf(Date);
     });
 
-    it("should throw error when saving duplicate shortLink", async () => {
+    it('should throw error when saving duplicate shortLink', async () => {
       // Arrange
       const linkData1 = {
         id: uuidv7(),
-        link: "https://www.example.com/url1",
-        shortLink: "abc123",
+        link: 'https://www.example.com/url1',
+        shortLink: 'abc123',
       };
 
       const linkData2 = {
         id: uuidv7(),
-        link: "https://www.example.com/url2",
-        shortLink: "abc123", // mesmo shortLink
+        link: 'https://www.example.com/url2',
+        shortLink: 'abc123', // mesmo shortLink
       };
 
       await LinkShorterRepository.save(linkData1);
@@ -54,13 +54,13 @@ describe("LinkShorterRepository", () => {
     });
   });
 
-  describe("findById", () => {
-    it("should find a link by id", async () => {
+  describe('findById', () => {
+    it('should find a link by id', async () => {
       // Arrange
       const linkData = {
         id: uuidv7(),
-        link: "https://www.example.com/test",
-        shortLink: "test123",
+        link: 'https://www.example.com/test',
+        shortLink: 'test123',
       };
 
       await LinkShorterRepository.save(linkData);
@@ -75,7 +75,7 @@ describe("LinkShorterRepository", () => {
       expect(result?.shortLink).toBe(linkData.shortLink);
     });
 
-    it("should return null when link is not found", async () => {
+    it('should return null when link is not found', async () => {
       // Arrange
       const nonExistentId = uuidv7();
 
@@ -87,20 +87,20 @@ describe("LinkShorterRepository", () => {
     });
   });
 
-  describe("findByShortLink", () => {
-    it("should find a link by shortLink", async () => {
+  describe('findByShortLink', () => {
+    it('should find a link by shortLink', async () => {
       // Arrange
       const linkData = {
         id: uuidv7(),
-        link: "https://www.example.com/test",
-        shortLink: "short123",
+        link: 'https://www.example.com/test',
+        shortLink: 'short123',
       };
 
       await LinkShorterRepository.save(linkData);
 
       // Act
       const result = await LinkShorterRepository.findByShortLink(
-        linkData.shortLink,
+        linkData.shortLink
       );
 
       // Assert
@@ -110,9 +110,9 @@ describe("LinkShorterRepository", () => {
       expect(result?.shortLink).toBe(linkData.shortLink);
     });
 
-    it("should return null when shortLink is not found", async () => {
+    it('should return null when shortLink is not found', async () => {
       // Arrange
-      const nonExistentShortLink = "nonexistent";
+      const nonExistentShortLink = 'nonexistent';
 
       // Act
       const result =
@@ -123,8 +123,8 @@ describe("LinkShorterRepository", () => {
     });
   });
 
-  describe("listAll", () => {
-    it("should return empty array when no links exist", async () => {
+  describe('listAll', () => {
+    it('should return empty array when no links exist', async () => {
       // Act
       const result = await LinkShorterRepository.listAll();
 
@@ -132,31 +132,31 @@ describe("LinkShorterRepository", () => {
       expect(result).toEqual([]);
     });
 
-    it("should return all links ordered by createdAt desc", async () => {
+    it('should return all links ordered by createdAt desc', async () => {
       // Arrange
       const link1 = {
         id: uuidv7(),
-        link: "https://www.example.com/1",
-        shortLink: "link1",
+        link: 'https://www.example.com/1',
+        shortLink: 'link1',
       };
 
       const link2 = {
         id: uuidv7(),
-        link: "https://www.example.com/2",
-        shortLink: "link2",
+        link: 'https://www.example.com/2',
+        shortLink: 'link2',
       };
 
       const link3 = {
         id: uuidv7(),
-        link: "https://www.example.com/3",
-        shortLink: "link3",
+        link: 'https://www.example.com/3',
+        shortLink: 'link3',
       };
 
       await LinkShorterRepository.save(link1);
       // Pequeno delay para garantir ordem diferente de createdAt
-      await new Promise((resolve) => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 100));
       await LinkShorterRepository.save(link2);
-      await new Promise((resolve) => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 100));
       await LinkShorterRepository.save(link3);
 
       // Act
@@ -165,19 +165,19 @@ describe("LinkShorterRepository", () => {
       // Assert
       expect(result).toHaveLength(3);
       // Deve estar ordenado por data de criação decrescente (mais recente primeiro)
-      expect(result[0].shortLink).toBe("link3");
-      expect(result[1].shortLink).toBe("link2");
-      expect(result[2].shortLink).toBe("link1");
+      expect(result[0].shortLink).toBe('link3');
+      expect(result[1].shortLink).toBe('link2');
+      expect(result[2].shortLink).toBe('link1');
     });
   });
 
-  describe("deleteById", () => {
-    it("should delete a link by id", async () => {
+  describe('deleteById', () => {
+    it('should delete a link by id', async () => {
       // Arrange
       const linkData = {
         id: uuidv7(),
-        link: "https://www.example.com/delete",
-        shortLink: "delete123",
+        link: 'https://www.example.com/delete',
+        shortLink: 'delete123',
       };
 
       await LinkShorterRepository.save(linkData);
@@ -194,28 +194,28 @@ describe("LinkShorterRepository", () => {
       expect(found).toBeNull();
     });
 
-    it("should throw error when trying to delete non-existent link", async () => {
+    it('should throw error when trying to delete non-existent link', async () => {
       // Arrange
       const nonExistentId = uuidv7();
 
       // Act & Assert
       await expect(
-        LinkShorterRepository.deleteById(nonExistentId),
+        LinkShorterRepository.deleteById(nonExistentId)
       ).rejects.toThrow();
     });
 
-    it("should delete link and cascade delete related accesses", async () => {
+    it('should delete link and cascade delete related accesses', async () => {
       // Arrange
       const linkData = {
         id: uuidv7(),
-        link: "https://www.example.com/cascade",
-        shortLink: "cascade123",
+        link: 'https://www.example.com/cascade',
+        shortLink: 'cascade123',
       };
 
       const savedLink = await LinkShorterRepository.save(linkData);
 
       // Create related access using prisma directly
-      const { prisma } = await import("../../lib/prisma");
+      const { prisma } = await import('../../lib/prisma');
       await prisma.linkAccess.create({
         data: {
           linkId: savedLink.id,

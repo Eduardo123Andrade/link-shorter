@@ -1,5 +1,5 @@
-import { z } from "zod";
-import { ERROR_MESSAGES, VALIDATION } from "../utils";
+import { z } from 'zod';
+import { ERROR_MESSAGES, VALIDATION } from '../utils';
 
 export const createLinkSchema = z.object({
   link: z
@@ -38,13 +38,16 @@ export const linkListItemSchema = z.object({
   id: z.string().uuid(),
   link: z.string().url(),
   shortLink: z.string(),
+  accessCount: z.number(),
 });
 
 export const linkListResponseSchema = z.array(linkListItemSchema);
 
-export const noContentResponseSchema = z.null().describe("Link deleted");
+export const noContentResponseSchema = z.null().describe('Link deleted');
 
-export const redirectResponseSchema = z.null().describe("Redirect to original URL");
+export const redirectResponseSchema = z
+  .null()
+  .describe('Redirect to original URL');
 
 export const errorResponseSchema = z.object({
   errors: z.record(z.string(), z.array(z.string()).optional()),
