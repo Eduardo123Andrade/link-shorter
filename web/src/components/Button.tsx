@@ -12,8 +12,8 @@ const button = tv({
         disabled:bg-blue-base disabled:opacity-50 disabled:hover:bg-blue-base
       `,
       secondary: `
-        bg-gray-200 text-gray-500 border border-gray-600
-        hover:bg-gray-200 hover:border-blue-base hover:border-2
+        bg-gray-200 text-gray-500
+        hover:bg-gray-500 hover:text-gray-100
         disabled:hover:border-gray-600 disabled:hover:bg-gray-200
 
       `,
