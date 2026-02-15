@@ -25,7 +25,7 @@ export function useFetchLinks() {
       const response = await fetch(`${API_URL}/links`);
 
       if (!response.ok) {
-        throw new Error('Failed to fetch links');
+        throw new Error('Falha ao buscar links');
       }
 
       const data: ApiFetchLink[] = await response.json();
@@ -39,7 +39,7 @@ export function useFetchLinks() {
 
       setLinks(links);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch links');
+      setError(err instanceof Error ? err.message : 'Falha ao buscar links');
     } finally {
       setLoading(false);
     }
