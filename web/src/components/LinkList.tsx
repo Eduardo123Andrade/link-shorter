@@ -4,10 +4,24 @@ import { LinkItem } from "./LinkItem";
 import { Separator } from "./Separator";
 
 import { useLinkStore } from "../store/linkStore";
+import { generateCsv, downloadCsv } from "../utils/csv";
 
 interface LinkListProps {
   loading?: boolean;
 }
+
+const padStart = (value: number) => String(value).padStart(2, '0');
+
+const LinkSkeleton = () => (
+  <div className="flex w-full animate-pulse flex-col gap-4">
+    {[1, 2, 3].map((i) => (
+      <div
+        key={i}
+        className="h-24 w-full rounded-xl bg-white/5"
+      />
+    ))}
+  </div>
+);
 
 export function LinkList({ loading }: LinkListProps) {
   const links = useLinkStore((state) => state.links);
@@ -15,20 +29,12 @@ export function LinkList({ loading }: LinkListProps) {
   const hasLinks = links.length > 0;
 
   const onDownloadCsv = () => {
-    // TODO: Implement CSV download
-    console.log("download csv");
+    const csvContent = generateCsv(links);
+    const date = new Date()
+    const timestamp = `${date.getFullYear()}-${padStart(date.getMonth())}-${padStart(date.getDate())}-${padStart(date.getHours())}-${padStart(date.getMinutes())}-${padStart(date.getSeconds())}`
+    const fileName = `meus-links-${timestamp}.csv`;
+    downloadCsv(csvContent, fileName);
   };
-
-  const LinkSkeleton = () => (
-    <div className="flex w-full animate-pulse flex-col gap-4">
-      {[1, 2, 3].map((i) => (
-        <div
-          key={i}
-          className="h-24 w-full rounded-xl bg-white/5"
-        />
-      ))}
-    </div>
-  );
 
   return (
     <div className="flex w-full flex-col gap-6 rounded-2xl bg-white/10 p-4 sm:p-6">

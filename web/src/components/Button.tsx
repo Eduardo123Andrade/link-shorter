@@ -12,10 +12,11 @@ const button = tv({
         disabled:bg-blue-base disabled:opacity-50 disabled:hover:bg-blue-base
       `,
       secondary: `
-        bg-gray-200 text-gray-500
+        bg-gray-200 text-gray-500 border border-gray-600
         hover:bg-gray-500 hover:text-gray-100
+        focus:ring-0 focus:ring-offset-0 active:border-transparent
         disabled:hover:border-gray-600 disabled:hover:bg-gray-200
-
+        cursor-pointer
       `,
     },
     size: {
