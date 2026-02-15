@@ -10,7 +10,7 @@ export function useCreateLink(fetchLinks: () => Promise<void>) {
 
   const handleSubmit = async () => {
     if (!originalUrl) {
-      setError('Original URL is required');
+      setError('A URL original é obrigatória');
       return;
     }
 
@@ -29,7 +29,7 @@ export function useCreateLink(fetchLinks: () => Promise<void>) {
         const message =
           data.errors
             ? Object.values(data.errors).flat().join(', ')
-            : data.error || 'Failed to create link';
+            : data.error || 'Falha ao criar o link';
         throw new Error(message);
       }
 
@@ -38,7 +38,7 @@ export function useCreateLink(fetchLinks: () => Promise<void>) {
       setOriginalUrl('');
       setCustomSuffix('');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create link');
+      setError(err instanceof Error ? err.message : 'Falha ao criar o link');
     } finally {
       setLoading(false);
     }

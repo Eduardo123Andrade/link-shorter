@@ -16,6 +16,7 @@ export const mockRequest = (overrides: Partial<FastifyRequest> = {}) => {
     body: {},
     params: {},
     query: {},
+    headers: {},
     protocol: "http",
     hostname: "localhost:3333",
     ...overrides,

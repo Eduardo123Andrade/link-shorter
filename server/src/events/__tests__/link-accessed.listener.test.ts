@@ -17,7 +17,8 @@ describe('LinkAccessedListener', () => {
     // Arrange
     setupLinkAccessedListener();
     const payload = { linkId: '123' };
-    (registerLinkAccess as jest.Mock).mockResolvedValue(undefined);
+    const mockLink = { id: '123', accessCount: 10 };
+    (registerLinkAccess as jest.Mock).mockResolvedValue(mockLink);
 
     // Act
     appEventEmitter.emit(LINK_ACCESSED_EVENT, payload);

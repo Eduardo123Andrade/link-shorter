@@ -4,27 +4,27 @@
 
 export const ERROR_MESSAGES = {
   // Link errors
-  LINK_NOT_FOUND: "Link not found",
-  LINK_ALREADY_EXISTS: "Link with this short code already exists",
-  INVALID_URL: "Invalid URL format",
-  INVALID_SHORT_LINK: "Invalid short link format",
-  SHORT_LINK_TOO_LONG: "Short link is too long (max 50 characters)",
-  SHORT_LINK_REQUIRED: "Short link is required",
-  LINK_URL_REQUIRED: "Link URL is required",
+  LINK_NOT_FOUND: "Link não encontrado",
+  LINK_ALREADY_EXISTS: "Já existe um link com este código curto",
+  INVALID_URL: "Formato de URL inválido",
+  INVALID_SHORT_LINK: "Formato de link curto inválido",
+  SHORT_LINK_TOO_LONG: "O link curto é muito longo (máx. 50 caracteres)",
+  SHORT_LINK_REQUIRED: "O link curto é obrigatório",
+  LINK_URL_REQUIRED: "A URL original é obrigatória",
 
   // Validation errors
-  INVALID_UUID: "Invalid UUID",
-  INVALID_UUID_FIELD: "Invalid UUID for field",
+  INVALID_UUID: "UUID inválido",
+  INVALID_UUID_FIELD: "UUID inválido para o campo",
 
   // Database errors
-  DATABASE_ERROR: "Database error",
-  CONNECTION_ERROR: "Database connection error",
+  DATABASE_ERROR: "Erro no banco de dados",
+  CONNECTION_ERROR: "Erro de conexão com o banco de dados",
 
   // Generic errors
-  INTERNAL_SERVER_ERROR: "Internal server error",
-  BAD_REQUEST: "Bad request",
-  UNAUTHORIZED: "Unauthorized",
-  FORBIDDEN: "Forbidden",
+  INTERNAL_SERVER_ERROR: "Erro interno do servidor",
+  BAD_REQUEST: "Requisição inválida",
+  UNAUTHORIZED: "Não autorizado",
+  FORBIDDEN: "Proibido",
 } as const;
 
 export type ErrorMessage = typeof ERROR_MESSAGES[keyof typeof ERROR_MESSAGES];
