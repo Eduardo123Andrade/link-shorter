@@ -8,7 +8,7 @@ interface CreateLinkFormProps {
 
 export function CreateLinkForm({ fetchLinks }: CreateLinkFormProps) {
   const { form, loading, onSubmit } = useCreateLink(fetchLinks);
-  const { register, handleSubmit, formState: { errors } } = form;
+  const { register, handleSubmit, formState: { errors, isValid } } = form;
 
   return (
     <div className="w-full">
@@ -34,7 +34,7 @@ export function CreateLinkForm({ fetchLinks }: CreateLinkFormProps) {
           />
         </div>
 
-        <Button type="submit" loading={loading} variant="primary">
+        <Button type="submit" loading={loading} disabled={!isValid} variant="primary">
           Salvar Link
         </Button>
       </form>
