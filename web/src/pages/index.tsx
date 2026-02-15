@@ -5,7 +5,7 @@ import { useFetchLinks } from "../hooks/useFetchLinks";
 import { useRealtimeUpdates } from "../hooks/useRealtimeUpdates";
 
 export default function Home() {
-  const { fetchLinks } = useFetchLinks();
+  const { fetchLinks, loading } = useFetchLinks();
   useRealtimeUpdates();
 
   return (
@@ -24,7 +24,7 @@ export default function Home() {
           </section>
 
           <section className="w-full">
-            <LinkList />
+            <LinkList loading={loading} />
           </section>
         </div>
       </main>
