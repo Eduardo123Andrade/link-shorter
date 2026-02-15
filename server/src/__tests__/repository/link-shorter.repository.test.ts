@@ -204,38 +204,42 @@ describe('LinkShorterRepository', () => {
       ).rejects.toThrow();
     });
 
-    it('should delete link and cascade delete related accesses', async () => {
+
+
+  });
+
+  describe('incrementAccess', () => {
+    it('should increment access count for a link', async () => {
       // Arrange
       const linkData = {
         id: uuidv7(),
-        link: 'https://www.example.com/cascade',
-        shortLink: 'cascade123',
+        link: 'https://www.example.com/access',
+        shortLink: 'access1',
       };
 
-      const savedLink = await LinkShorterRepository.save(linkData);
-
-      // Create related access using prisma directly
-      const { prisma } = await import('../../lib/prisma');
-      await prisma.linkAccess.create({
-        data: {
-          linkId: savedLink.id,
-        },
-      });
-
-      // Verify access exists
-      const accessesBefore = await prisma.linkAccess.findMany({
-        where: { linkId: savedLink.id },
-      });
-      expect(accessesBefore).toHaveLength(1);
+      await LinkShorterRepository.save(linkData);
 
       // Act
-      await LinkShorterRepository.deleteById(linkData.id);
+      const result = await LinkShorterRepository.incrementAccess(linkData.id);
 
-      // Assert - accesses should be deleted due to cascade
-      const accessesAfter = await prisma.linkAccess.findMany({
-        where: { linkId: savedLink.id },
-      });
-      expect(accessesAfter).toHaveLength(0);
+      // Assert
+      expect(result.accessCount).toBe(1);
+
+      // Act again
+      const result2 = await LinkShorterRepository.incrementAccess(linkData.id);
+
+      // Assert again
+      expect(result2.accessCount).toBe(2);
+    });
+
+    it('should throw error when trying to increment access for non-existent link', async () => {
+      // Arrange
+      const nonExistentId = uuidv7();
+
+      // Act & Assert
+      await expect(
+        LinkShorterRepository.incrementAccess(nonExistentId)
+      ).rejects.toThrow();
     });
   });
 });
