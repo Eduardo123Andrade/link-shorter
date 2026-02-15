@@ -2,9 +2,8 @@ import { CopyIcon } from "@phosphor-icons/react/Copy";
 import { TrashIcon } from "@phosphor-icons/react/Trash";
 import { IconButton } from "./IconButton";
 import { ShortLink } from "./ShortLink";
-import { useLinkStore } from "../store/linkStore";
-import { API_URL } from "../lib/api";
 import { toast } from "../lib/toast";
+import { useDeleteLink } from "../hooks/useDeleteLink";
 
 interface LinkItemProps {
   id: string;
@@ -19,7 +18,7 @@ export function LinkItem({
   originalUrl,
   accessCount,
 }: LinkItemProps) {
-  const removeLink = useLinkStore((state) => state.removeLink);
+  const { deleteLink, loading } = useDeleteLink();
 
   const handleCopy = () => {
     navigator.clipboard.writeText(shortUrl);
@@ -27,20 +26,7 @@ export function LinkItem({
   };
 
   const onDelete = async () => {
-    try {
-      const response = await fetch(`${API_URL}/links/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete link");
-      }
-
-      removeLink(id);
-    } catch (err) {
-      console.error("Failed to delete link:", err);
-      toast.error("Erro ao excluir o link. Tente novamente.");
-    }
+    await deleteLink(id);
   };
 
   return (
@@ -59,7 +45,13 @@ export function LinkItem({
 
         <div className="flex items-center gap-2">
           <IconButton onClick={handleCopy} Icon={CopyIcon} title="Copiar link" />
-          <IconButton onClick={onDelete} Icon={TrashIcon} title="Excluir link" />
+          <IconButton 
+            onClick={onDelete} 
+            Icon={TrashIcon} 
+            title="Excluir link" 
+            disabled={loading}
+            className="hover:text-danger hover:border-danger hover:bg-danger/10"
+          />
         </div>
       </div>
     </div>

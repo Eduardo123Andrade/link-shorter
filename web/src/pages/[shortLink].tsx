@@ -1,36 +1,13 @@
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { API_URL } from '../lib/api';
 import { LogoIcon } from '@/components/LogoIcon';
+import { useValidateLink } from '@/hooks/useValidateLink';
 
 export default function ShortLinkPage() {
   const router = useRouter();
   const { shortLink } = router.query;
-  const [validating, setValidating] = useState(true);
-
-  useEffect(() => {
-    if (!shortLink) return;
-
-    const validate = async () => {
-      try {
-        const response = await fetch(`${API_URL}/${shortLink}`, {
-          method: 'GET',
-          redirect: 'manual',
-          headers: { Purpose: 'prefetch' },
-        });
-
-        if (response.type === 'opaqueredirect' || response.ok || response.status === 302) {
-          setValidating(false);
-        } else {
-          router.replace('/404');
-        }
-      } catch {
-        router.replace('/404');
-      }
-    };
-
-    validate();
-  }, [shortLink, router]);
+  const { validating } = useValidateLink(shortLink);
 
   useEffect(() => {
     if (!shortLink || validating) return;
