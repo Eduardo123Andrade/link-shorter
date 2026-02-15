@@ -1,20 +1,22 @@
 import { IconProps } from "@phosphor-icons/react";
 import { Button } from "./Button";
+import { ComponentProps } from "react";
 
-interface IconButtonProps {
+interface IconButtonProps extends ComponentProps<"button"> {
   onClick: () => void;
   Icon: React.ComponentType<IconProps>;
   title: string;
 }
 
-export const IconButton = ({ onClick, Icon, title }: IconButtonProps) => {
+export const IconButton = ({ onClick, Icon, title, className, ...props }: IconButtonProps) => {
   return (
     <Button
       variant="secondary"
       size="icon"
       onClick={onClick}
-      className="cursor-pointer border-transparent bg-gray-800 text-gray-300 hover:border-gray-600 hover:bg-gray-700 hover:text-blue-base"
+      className={`cursor-pointer border-transparent bg-gray-800 text-gray-400 active:border-0 focus:ring-0 focus:ring-offset-0 ${className}`}
       title={title}
+      {...props}
     >
       <Icon size={18} />
     </Button>

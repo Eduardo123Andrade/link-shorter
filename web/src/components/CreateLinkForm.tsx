@@ -7,26 +7,23 @@ interface CreateLinkFormProps {
 }
 
 export function CreateLinkForm({ fetchLinks }: CreateLinkFormProps) {
-  const {
-    originalUrl,
-    setOriginalUrl,
-    customSuffix,
-    setCustomSuffix,
-    loading,
-    error,
-    handleSubmit,
-  } = useCreateLink(fetchLinks);
+  const { form, loading, onSubmit } = useCreateLink(fetchLinks);
+  const { register, handleSubmit, formState: { errors, isValid } } = form;
 
   return (
-    <div className="w-full">
-      <div className="space-y-4">
+    <div className="w-full flex flex-col gap-4">
+      <h1 className="text-xl text-gray-200 font-bold tracking-tight">
+        Novo link
+      </h1>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="space-y-2">
           <TextInput
             id="originalUrl"
             label="Link Original"
             placeholder="www.example.com.br"
-            value={originalUrl}
-            onChange={(e) => setOriginalUrl(e.target.value)}
+            error={errors.originalUrl?.message}
+            {...register("originalUrl")}
           />
         </div>
 
@@ -35,18 +32,16 @@ export function CreateLinkForm({ fetchLinks }: CreateLinkFormProps) {
             id="customSuffix"
             label="Link Encurtado"
             placeholder="my-custom-link"
-            value={customSuffix}
-            onChange={(e) => setCustomSuffix(e.target.value)}
             prefix="brev.ly/"
+            error={errors.customSuffix?.message}
+            {...register("customSuffix")}
           />
         </div>
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
-
-        <Button onClick={handleSubmit} loading={loading} variant="primary">
+        <Button type="submit" loading={loading} disabled={!isValid} variant="primary">
           Salvar Link
         </Button>
-      </div>
+      </form>
     </div>
-  );  
+  );
 }

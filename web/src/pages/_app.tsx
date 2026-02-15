@@ -2,6 +2,7 @@ import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import localFont from "next/font/local";
 import Head from "next/head";
+import { ToastContainer } from "../components/ToastContainer";
 
 const openSans = localFont({
   src: [
@@ -36,8 +37,9 @@ export default function App({ Component, pageProps }: AppProps) {
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <div className={`${openSans.variable} antialiased`}>
+      <div className={`${openSans.variable} antialiased font-sans`}>
         <Component {...pageProps} />
+        <ToastContainer />
       </div>
     </>
   );

@@ -2,18 +2,19 @@ import { ComponentProps } from "react";
 import { tv, VariantProps } from "tailwind-variants";
 
 const button = tv({
-  base: "flex h-12 w-full items-center justify-center rounded-lg px-6 font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed",
+  base: "flex h-12 w-full items-center justify-center rounded-lg px-6 font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-[url('/cursors/not-allowed.svg')_12_12,not-allowed]",
   variants: {
     variant: {
       primary: `
         bg-blue-base text-white
         hover:bg-blue-dark
         focus:ring-blue-base focus:ring-offset-gray-900
-        disabled:bg-blue-base disabled:cursor-not-allowed disabled:opacity-50
+        disabled:bg-blue-base disabled:opacity-50 disabled:hover:bg-blue-base
       `,
       secondary: `
-        bg-gray-200 text-gray-500 border border-gray-600
-        hover:bg-gray-200 hover:border-blue-base hover:border-2
+        bg-gray-200 text-gray-500
+        hover:bg-gray-500 hover:text-gray-100
+        disabled:hover:border-gray-600 disabled:hover:bg-gray-200
 
       `,
     },
