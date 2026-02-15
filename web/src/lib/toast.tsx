@@ -1,4 +1,6 @@
 import { toast as reactToast, ToastOptions } from 'react-toastify';
+import { InfoIcon } from '@phosphor-icons/react/Info';
+import { WarningCircleIcon } from '@phosphor-icons/react/WarningCircle';
 
 const baseOptions: ToastOptions = {
   position: 'bottom-right',
@@ -7,11 +9,12 @@ const baseOptions: ToastOptions = {
 
 const infoStyle: ToastOptions = {
   style: { background: '#E8EAF0', color: '#4D505C', borderRadius: '12px' },
-  icon: false,
+  icon: <InfoIcon size={24} weight="fill" color="#2C46B1" />,
 };
 
 const errorStyle: ToastOptions = {
   style: { background: '#FBE2E6', color: '#B12C4D', borderRadius: '12px' },
+  icon: <WarningCircleIcon size={24} weight="fill" color="#B12C4D" />,
 };
 
 interface ToastContentProps {
