@@ -17,7 +17,7 @@ const LinkSkeleton = () => (
     {[1, 2, 3].map((i) => (
       <div
         key={i}
-        className="h-24 w-full rounded-xl bg-white/5"
+        className="h-24 w-full rounded-xl bg-gray-200"
       />
     ))}
   </div>
@@ -37,9 +37,9 @@ export function LinkList({ loading }: LinkListProps) {
   };
 
   return (
-    <div className="flex w-full flex-col gap-6 rounded-2xl bg-white/10 p-4 sm:p-6">
+    <div className="flex w-full flex-col gap-6 rounded-2xl bg-gray-100 p-4 sm:p-6">
       <div className="flex items-center justify-between">
-        <h2 className="w-full text-xl font-semibold text-gray-100">
+        <h2 className="w-full text-xl font-semibold text-gray-600">
           Meus links
         </h2>
         <DownloadCsvButton 

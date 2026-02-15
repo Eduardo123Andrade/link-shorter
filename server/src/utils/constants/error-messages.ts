@@ -5,7 +5,7 @@
 export const ERROR_MESSAGES = {
   // Link errors
   LINK_NOT_FOUND: "Link não encontrado",
-  LINK_ALREADY_EXISTS: "Já existe um link com este código curto",
+  LINK_ALREADY_EXISTS: "Essa URL encurtada já existe",
   INVALID_URL: "Formato de URL inválido",
   INVALID_SHORT_LINK: "Formato de link curto inválido",
   SHORT_LINK_TOO_LONG: "O link curto é muito longo (máx. 50 caracteres)",

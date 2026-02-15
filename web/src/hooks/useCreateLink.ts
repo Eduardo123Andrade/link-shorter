@@ -42,7 +42,7 @@ export function useCreateLink(fetchLinks: () => Promise<void>) {
       toast.success('Link criado com sucesso!');
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Falha ao criar o link';
-      toast.error(message);
+      toast.error({ title: 'Erro no cadastro', message });
     } finally {
       setLoading(false);
     }

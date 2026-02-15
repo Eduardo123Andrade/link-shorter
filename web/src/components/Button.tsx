@@ -8,7 +8,7 @@ const button = tv({
       primary: `
         bg-blue-base text-white
         hover:bg-blue-dark
-        focus:ring-blue-base focus:ring-offset-gray-900
+        focus:ring-blue-base focus:ring-offset-gray-100
         disabled:bg-blue-base disabled:opacity-50 disabled:hover:bg-blue-base
       `,
       secondary: `

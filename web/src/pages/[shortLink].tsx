@@ -24,11 +24,11 @@ export default function ShortLinkPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-900 p-4 font-sans text-gray-100">
-      <main className="flex w-full max-w-[580px] flex-col items-center gap-6 rounded-2xl bg-white/5 ring-1 ring-white/10 px-8 py-14 text-center">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-200 p-4 font-sans text-gray-600">
+      <main className="flex w-full max-w-[580px] flex-col items-center gap-6 rounded-2xl bg-gray-100 px-8 py-14 text-center">
         <LogoIcon />
 
-        <h1 className="text-2xl font-bold text-gray-100">
+        <h1 className="text-2xl font-bold text-gray-600">
           Redirecionando...
         </h1>
 

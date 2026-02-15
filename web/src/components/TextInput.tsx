@@ -3,7 +3,7 @@ import { WarningIcon } from "@phosphor-icons/react/Warning";
 import { tv } from "tailwind-variants";
 
 const inputContainer = tv({
-  base: "group flex h-12 w-full items-center gap-3 rounded-lg border bg-gray-900 px-4 transition-colors",
+  base: "group flex h-12 w-full items-center gap-3 rounded-lg border bg-white px-4 transition-colors",
   variants: {
     state: {
       default: "border-gray-300 focus-within:border-blue-base",
@@ -51,7 +51,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
 
           <input
             ref={ref}
-            className="flex-1 bg-transparent text-gray-400 placeholder:text-gray-400 focus:outline-none focus:placeholder-transparent"
+            className="flex-1 bg-transparent text-gray-600 placeholder:text-gray-400 focus:outline-none focus:placeholder-transparent"
             {...props}
           />
         </div>
@@ -59,7 +59,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
         {error && (
           <div className="flex items-center gap-1">
             <WarningIcon className="text-danger" size={16} />
-            <span className="text-xs text-gray-400">{error}</span>
+            <span className="mt-[2px] text-xs text-gray-400">{error}</span>
           </div>
         )}
       </div>

@@ -35,7 +35,7 @@ export function LinkItem({
   };
 
   return (
-    <div className="group flex items-center justify-between gap-3 rounded-xl border border-white/5 bg-white/5 p-4 transition-colors hover:border-white/10">
+    <div className="group flex items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white p-4 transition-colors hover:border-gray-300">
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <ShortLink shortUrl={shortUrl} />
         <span className="block w-full truncate text-sm text-gray-400">

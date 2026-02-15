@@ -22,7 +22,7 @@ export function useDeleteLink() {
       toast.success('Link excluído com sucesso!');
     } catch (err) {
       console.error('Failed to delete link:', err);
-      toast.error('Erro ao excluir o link. Tente novamente.');
+      toast.error({ title: 'Erro ao excluir', message: 'Nao foi possivel excluir o link. Tente novamente.' });
     } finally {
       setLoading(false);
     }
