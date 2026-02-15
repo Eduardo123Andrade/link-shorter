@@ -6,6 +6,7 @@ interface LinkStore {
   addLink: (link: IShortLink) => void;
   setLinks: (links: IShortLink[]) => void;
   removeLink: (id: string) => void;
+  updateLinkStats: (id: string, accessCount: number) => void;
 }
 
 export const useLinkStore = create<LinkStore>((set) => ({
@@ -14,4 +15,10 @@ export const useLinkStore = create<LinkStore>((set) => ({
   setLinks: (links) => set({ links }),
   removeLink: (id) =>
     set((state) => ({ links: state.links.filter((link) => link.id !== id) })),
+  updateLinkStats: (id: string, accessCount: number) =>
+    set((state) => ({
+      links: state.links.map((link) =>
+        link.id === id ? { ...link, accessCount } : link
+      ),
+    })),
 }));

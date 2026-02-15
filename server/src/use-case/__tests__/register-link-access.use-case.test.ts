@@ -16,9 +16,12 @@ describe('registerLinkAccess', () => {
     // Arrange
     const linkId = '123';
     mockAccessRepository.create.mockResolvedValue({
-      id: 'access-123',
-      linkId,
-      accessedAt: new Date(),
+      id: linkId,
+      link: 'https://example.com',
+      shortLink: 'abc',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      accessCount: 1,
     });
 
     // Act

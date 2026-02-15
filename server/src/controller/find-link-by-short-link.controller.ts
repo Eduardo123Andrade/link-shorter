@@ -14,7 +14,21 @@ export const findLinkByShortLinkController = async (
 
   const link = await findLinkByShortLink(data);
 
-  appEventEmitter.emit(LINK_ACCESSED_EVENT, { linkId: link.id });
+  const purpose =
+    request.headers['purpose'] ||
+    request.headers['sec-purpose'] ||
+    request.headers['x-purpose'] ||
+    request.headers['x-moz'];
+
+  const isPrefetch =
+    typeof purpose === 'string' &&
+    (purpose.toLowerCase().includes('prefetch') ||
+      purpose.toLowerCase().includes('preview') ||
+      purpose.toLowerCase().includes('prerender'));
+
+  if (!isPrefetch) {
+    appEventEmitter.emit(LINK_ACCESSED_EVENT, { linkId: link.id });
+  }
 
   return reply.code(HttpStatus.FOUND).redirect(link.link);
 };

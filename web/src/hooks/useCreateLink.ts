@@ -1,15 +1,12 @@
 import { useState } from 'react';
-import { useFetchLinks } from './useFetchLinks';
 
-const API_URL = 'http://localhost:3333';
+import { API_URL } from '../lib/api';
 
-export function useCreateLink() {
+export function useCreateLink(fetchLinks: () => Promise<void>) {
   const [originalUrl, setOriginalUrl] = useState('');
   const [customSuffix, setCustomSuffix] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const { fetchLinks } = useFetchLinks();
 
   const handleSubmit = async () => {
     if (!originalUrl) {

@@ -2,7 +2,11 @@ import { useCreateLink } from "../hooks/useCreateLink";
 import { Button } from "./Button";
 import { TextInput } from "./TextInput";
 
-export function CreateLinkForm() {
+interface CreateLinkFormProps {
+  fetchLinks: () => Promise<void>;
+}
+
+export function CreateLinkForm({ fetchLinks }: CreateLinkFormProps) {
   const {
     originalUrl,
     setOriginalUrl,
@@ -11,7 +15,7 @@ export function CreateLinkForm() {
     loading,
     error,
     handleSubmit,
-  } = useCreateLink();
+  } = useCreateLink(fetchLinks);
 
   return (
     <div className="w-full">
