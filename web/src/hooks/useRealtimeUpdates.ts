@@ -8,14 +8,12 @@ export function useRealtimeUpdates() {
 
   useEffect(() => {
     let socket: WebSocket | null = null;
-    let reconnectTimeout: any;
+    let reconnectTimeout: ReturnType<typeof setTimeout>;
 
     function connect() {
       socket = new WebSocket(WS_URL);
 
-      socket.onopen = () => {
-        console.log('Connected to WebSocket');
-      };
+      socket.onopen = () => { };
 
       socket.onmessage = (event) => {
         try {
@@ -23,21 +21,16 @@ export function useRealtimeUpdates() {
           
           if (data.type === 'LINK_STATS_UPDATED') {
             const { linkId, accessCount } = data.payload;
-            console.log("Link stats updated", linkId, accessCount);
             updateLinkStats(linkId, accessCount);
           }
-        } catch (error) {
-          console.error('Failed to parse WebSocket message', error);
-        }
+        } catch (error) { }
       };
 
-      socket.onclose = (event) => {
-        console.log(`WebSocket connection closed (code: ${event.code}, reason: ${event.reason}), reconnecting...`);
+      socket.onclose = () => {
         reconnectTimeout = setTimeout(connect, 3000);
       };
 
-      socket.onerror = (error) => {
-        console.error('WebSocket error', error);
+      socket.onerror = () => {
         socket?.close();
       };
     }

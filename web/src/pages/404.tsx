@@ -1,6 +1,13 @@
 import Link from 'next/link';
 
+const glitchLines = Array.from({ length: 8 }).map(() => ({
+  width: 60 + Math.random() * 40,
+  marginLeft: Math.random() * 20,
+  opacity: 0.4 + Math.random() * 0.6,
+}));
+
 function Glitch404() {
+
   return (
     <div className="relative select-none" aria-hidden="true">
       <span className="text-[120px] font-black leading-none tracking-tight text-blue-base">
@@ -20,14 +27,14 @@ function Glitch404() {
       </span>
       {/* Horizontal glitch lines */}
       <div className="absolute inset-0 flex flex-col justify-center gap-3 overflow-hidden opacity-30">
-        {Array.from({ length: 8 }).map((_, i) => (
+        {glitchLines.map((style, i) => (
           <div
             key={i}
             className="h-[2px] bg-red-400"
             style={{
-              width: `${60 + Math.random() * 40}%`,
-              marginLeft: `${Math.random() * 20}%`,
-              opacity: 0.4 + Math.random() * 0.6,
+              width: `${style.width}%`,
+              marginLeft: `${style.marginLeft}%`,
+              opacity: style.opacity,
             }}
           />
         ))}

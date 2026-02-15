@@ -12,6 +12,17 @@ interface LinkListProps {
 
 const padStart = (value: number) => String(value).padStart(2, '0');
 
+const LinkSkeleton = () => (
+  <div className="flex w-full animate-pulse flex-col gap-4">
+    {[1, 2, 3].map((i) => (
+      <div
+        key={i}
+        className="h-24 w-full rounded-xl bg-white/5"
+      />
+    ))}
+  </div>
+);
+
 export function LinkList({ loading }: LinkListProps) {
   const links = useLinkStore((state) => state.links);
 
@@ -24,17 +35,6 @@ export function LinkList({ loading }: LinkListProps) {
     const fileName = `meus-links-${timestamp}.csv`;
     downloadCsv(csvContent, fileName);
   };
-
-  const LinkSkeleton = () => (
-    <div className="flex w-full animate-pulse flex-col gap-4">
-      {[1, 2, 3].map((i) => (
-        <div
-          key={i}
-          className="h-24 w-full rounded-xl bg-white/5"
-        />
-      ))}
-    </div>
-  );
 
   return (
     <div className="flex w-full flex-col gap-6 rounded-2xl bg-white/10 p-4 sm:p-6">
