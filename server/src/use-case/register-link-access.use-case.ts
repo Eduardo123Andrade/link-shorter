@@ -1,4 +1,4 @@
-import { LinkAccessRepository } from '../repository';
+import { LinkShorterRepository } from '../repository';
 
 interface RegisterLinkAccessInput {
   linkId: string;
@@ -7,5 +7,5 @@ interface RegisterLinkAccessInput {
 export const registerLinkAccess = async ({
   linkId,
 }: RegisterLinkAccessInput): Promise<any> => {
-  return await LinkAccessRepository.create(linkId);
+  return await LinkShorterRepository.incrementAccess(linkId);
 };

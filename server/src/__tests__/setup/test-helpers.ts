@@ -4,7 +4,7 @@ import { prisma, disconnectPrisma } from "../../lib/prisma";
  * Limpa todas as tabelas do banco de dados de teste
  */
 export const cleanDatabase = async () => {
-  await prisma.linkAccess.deleteMany();
+
   await prisma.link.deleteMany();
 };
 

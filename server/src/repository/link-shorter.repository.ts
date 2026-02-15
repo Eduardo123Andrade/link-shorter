@@ -56,10 +56,27 @@ const deleteById = async (id: string) => {
   return deletedLink;
 };
 
+const incrementAccess = async (id: string) => {
+  await findById(id);
+
+  const updatedLink = await prisma.link.update({
+    where: {
+      id,
+    },
+    data: {
+      accessCount: {
+        increment: 1,
+      },
+    },
+  });
+  return updatedLink;
+};
+
 export const LinkShorterRepository = {
   save,
   findById,
   findByShortLink,
   listAll,
   deleteById,
+  incrementAccess
 };

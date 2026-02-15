@@ -1,10 +1,10 @@
 import { registerLinkAccess } from '../register-link-access.use-case';
-import { LinkAccessRepository } from '../../repository/link-access.repository';
+import { LinkShorterRepository } from '../../repository/link-shorter.repository';
 
-jest.mock('../../repository/link-access.repository');
+jest.mock('../../repository/link-shorter.repository');
 
-const mockAccessRepository = LinkAccessRepository as jest.Mocked<
-  typeof LinkAccessRepository
+const mockLinkShorterRepository = LinkShorterRepository as jest.Mocked<
+  typeof LinkShorterRepository
 >;
 
 describe('registerLinkAccess', () => {
@@ -12,10 +12,10 @@ describe('registerLinkAccess', () => {
     jest.clearAllMocks();
   });
 
-  it('should call LinkAccessRepository.create with correct linkId', async () => {
+  it('should call LinkShorterRepository.incrementAccess with correct linkId', async () => {
     // Arrange
     const linkId = '123';
-    mockAccessRepository.create.mockResolvedValue({
+    mockLinkShorterRepository.incrementAccess.mockResolvedValue({
       id: linkId,
       link: 'https://example.com',
       shortLink: 'abc',
@@ -28,15 +28,17 @@ describe('registerLinkAccess', () => {
     await registerLinkAccess({ linkId });
 
     // Assert
-    expect(mockAccessRepository.create).toHaveBeenCalledWith(linkId);
-    expect(mockAccessRepository.create).toHaveBeenCalledTimes(1);
+    expect(mockLinkShorterRepository.incrementAccess).toHaveBeenCalledWith(
+      linkId
+    );
+    expect(mockLinkShorterRepository.incrementAccess).toHaveBeenCalledTimes(1);
   });
 
   it('should propagate errors from repository', async () => {
     // Arrange
     const linkId = '123';
     const error = new Error('Database error');
-    mockAccessRepository.create.mockRejectedValue(error);
+    mockLinkShorterRepository.incrementAccess.mockRejectedValue(error);
 
     // Act & Assert
     await expect(registerLinkAccess({ linkId })).rejects.toThrow(error);
