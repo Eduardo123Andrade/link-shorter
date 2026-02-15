@@ -14,7 +14,7 @@ export const IconButton = ({ onClick, Icon, title, className, ...props }: IconBu
       variant="secondary"
       size="icon"
       onClick={onClick}
-      className={`cursor-pointer border-transparent bg-gray-800 text-gray-400 active:border-0 focus:ring-0 focus:ring-offset-0 ${className}`}
+      className={`cursor-pointer border-transparent bg-gray-200 text-gray-500 active:border-0 focus:ring-0 focus:ring-offset-0 ${className}`}
       title={title}
       {...props}
     >

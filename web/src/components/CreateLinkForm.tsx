@@ -12,7 +12,7 @@ export function CreateLinkForm({ fetchLinks }: CreateLinkFormProps) {
 
   return (
     <div className="w-full flex flex-col gap-4">
-      <h1 className="text-xl text-gray-200 font-bold tracking-tight">
+      <h1 className="text-xl text-gray-600 font-bold tracking-tight">
         Novo link
       </h1>
 

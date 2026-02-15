@@ -1,5 +1,5 @@
 export const Separator = () => {
   return (
-    <div className="h-px w-full bg-gray-800" />
+    <div className="h-px w-full bg-gray-200" />
   )
 }

@@ -12,7 +12,7 @@ export const DownloadCsvButton = ({ onDownloadCsv, disabled }: DownloadCsvButton
     <Button 
       variant="secondary" 
       size="sm" 
-      className="h-10 gap-2 w-auto bg-gray-200/10 px-4 font-medium text-gray-100 hover:border-transparent hover:bg-gray-200/20"
+      className="h-10 gap-2 w-auto bg-gray-200 px-4 font-medium text-gray-500 hover:border-transparent hover:bg-gray-300"
       onClick={onDownloadCsv}
       disabled={disabled}
     >

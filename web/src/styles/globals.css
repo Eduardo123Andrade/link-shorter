@@ -67,8 +67,8 @@
 }
 
 body {
-  background-color: var(--color-gray-900);
-  color: var(--color-gray-100);
+  background-color: var(--color-gray-200);
+  color: var(--color-gray-600);
   font-family: var(--font-sans);
   
   /* Default Body Style (Text Md - Regular variant) */
