@@ -22,11 +22,16 @@ export function LinkItem({
 
   const handleCopy = () => {
     navigator.clipboard.writeText(shortUrl);
-    toast.success("Link copiado para a área de transferência!");
+    toast.info({ 
+      title: "Link copiado com sucesso",
+      message: `o link ${shortUrl} foi copiado para a área de transferência!`
+    });
   };
 
   const onDelete = async () => {
-    await deleteLink(id);
+    if (window.confirm("Tem certeza que deseja excluir este link?")) {
+      await deleteLink(id);
+    }
   };
 
   return (
@@ -50,7 +55,7 @@ export function LinkItem({
             Icon={TrashIcon} 
             title="Excluir link" 
             disabled={loading}
-            className="hover:text-danger hover:border-danger hover:bg-danger/10"
+            // className="hover:text-danger hover:border-danger hover:bg-danger/10"
           />
         </div>
       </div>
