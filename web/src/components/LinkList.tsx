@@ -4,10 +4,13 @@ import { LinkItem } from "./LinkItem";
 import { Separator } from "./Separator";
 
 import { useLinkStore } from "../store/linkStore";
+import { generateCsv, downloadCsv } from "../utils/csv";
 
 interface LinkListProps {
   loading?: boolean;
 }
+
+const padStart = (value: number) => String(value).padStart(2, '0');
 
 export function LinkList({ loading }: LinkListProps) {
   const links = useLinkStore((state) => state.links);
@@ -15,8 +18,11 @@ export function LinkList({ loading }: LinkListProps) {
   const hasLinks = links.length > 0;
 
   const onDownloadCsv = () => {
-    // TODO: Implement CSV download
-    console.log("download csv");
+    const csvContent = generateCsv(links);
+    const date = new Date()
+    const timestamp = `${date.getFullYear()}-${padStart(date.getMonth())}-${padStart(date.getDate())}-${padStart(date.getHours())}-${padStart(date.getMinutes())}-${padStart(date.getSeconds())}`
+    const fileName = `meus-links-${timestamp}.csv`;
+    downloadCsv(csvContent, fileName);
   };
 
   const LinkSkeleton = () => (
