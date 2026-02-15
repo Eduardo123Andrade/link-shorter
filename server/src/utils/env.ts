@@ -4,8 +4,8 @@ const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   PORT: z.coerce.number().default(3333),
   HOST: z.string().default("0.0.0.0"),
-  DATABASE_URL: z.string().url(),
-  BASE_URL: z.string().url().default("http://localhost:3333"),
+  DATABASE_URL: z.url(),
+  BASE_URL: z.url().default("http://localhost:3000"),
 });
 
 const _env = envSchema.safeParse(process.env);
