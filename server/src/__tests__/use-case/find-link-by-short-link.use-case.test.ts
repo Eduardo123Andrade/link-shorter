@@ -61,7 +61,7 @@ describe('findLinkByShortLink', () => {
     // Act & Assert
     await expect(
       findLinkByShortLink({ shortLink: 'nonexistent' })
-    ).rejects.toThrow('Link not found');
+    ).rejects.toThrow('Link não encontrado');
   });
 
   it('should throw LinkNotFoundError with status code 404', async () => {
