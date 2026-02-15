@@ -3,8 +3,8 @@ import { TrashIcon } from "@phosphor-icons/react/Trash";
 import { IconButton } from "./IconButton";
 import { ShortLink } from "./ShortLink";
 import { useLinkStore } from "../store/linkStore";
-
 import { API_URL } from "../lib/api";
+import { toast } from "../lib/toast";
 
 interface LinkItemProps {
   id: string;
@@ -23,6 +23,7 @@ export function LinkItem({
 
   const handleCopy = () => {
     navigator.clipboard.writeText(shortUrl);
+    toast.success("Link copiado para a área de transferência!");
   };
 
   const onDelete = async () => {
@@ -38,6 +39,7 @@ export function LinkItem({
       removeLink(id);
     } catch (err) {
       console.error("Failed to delete link:", err);
+      toast.error("Erro ao excluir o link. Tente novamente.");
     }
   };
 

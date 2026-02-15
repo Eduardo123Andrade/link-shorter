@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { toast } from '../lib/toast';
 
 import { API_URL } from '../lib/api';
 
@@ -37,8 +38,11 @@ export function useCreateLink(fetchLinks: () => Promise<void>) {
 
       setOriginalUrl('');
       setCustomSuffix('');
+      toast.success('Link criado com sucesso!');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Falha ao criar o link');
+      const message = err instanceof Error ? err.message : 'Falha ao criar o link';
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
