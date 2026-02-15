@@ -1,8 +1,10 @@
 import { ProjectLogo } from "../components/ProjectLogo";
 import { CreateLinkForm } from "../components/CreateLinkForm";
 import { LinkList } from "../components/LinkList";
+import { useFetchLinks } from "../hooks/useFetchLinks";
 
 export default function Home() {
+  useFetchLinks();
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-900 p-4 font-sans text-gray-100">
       <main className="flex w-full max-w-[960px] flex-col items-center gap-6">

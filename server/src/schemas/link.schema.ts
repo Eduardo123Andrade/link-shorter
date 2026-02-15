@@ -4,8 +4,8 @@ import { ERROR_MESSAGES, VALIDATION } from '../utils';
 export const createLinkSchema = z.object({
   link: z
     .string({ message: ERROR_MESSAGES.LINK_URL_REQUIRED })
-    .url(ERROR_MESSAGES.INVALID_URL)
-    .max(VALIDATION.LINK.MAX_LENGTH),
+    .max(VALIDATION.LINK.MAX_LENGTH)
+    .regex(/^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/, ERROR_MESSAGES.INVALID_URL),
   shortLink: z
     .string({ message: ERROR_MESSAGES.SHORT_LINK_REQUIRED })
     .min(VALIDATION.SHORT_LINK.MIN_LENGTH, ERROR_MESSAGES.SHORT_LINK_REQUIRED)

@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { useLinkStore } from '../store/linkStore';
+import { useFetchLinks } from './useFetchLinks';
+
+const API_URL = 'http://localhost:3333';
 
 export function useCreateLink() {
   const [originalUrl, setOriginalUrl] = useState('');
@@ -7,7 +9,7 @@ export function useCreateLink() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const addLink = useLinkStore((state) => state.addLink);
+  const { fetchLinks } = useFetchLinks();
 
   const handleSubmit = async () => {
     if (!originalUrl) {
@@ -19,22 +21,27 @@ export function useCreateLink() {
     setError(null);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      const newLink = {
-        id: crypto.randomUUID(),
-        shortUrl: customSuffix,
-        originalUrl,
-        accessCount: 0,
-      };
+      const response = await fetch(`${API_URL}/links`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ link: originalUrl, shortLink: customSuffix }),
+      });
 
-      addLink(newLink);
-      
+      if (!response.ok) {
+        const data = await response.json();
+        const message =
+          data.errors
+            ? Object.values(data.errors).flat().join(', ')
+            : data.error || 'Failed to create link';
+        throw new Error(message);
+      }
+
+      await fetchLinks();
+
       setOriginalUrl('');
       setCustomSuffix('');
-      
     } catch (err) {
-      setError('Failed to create link');
+      setError(err instanceof Error ? err.message : 'Failed to create link');
     } finally {
       setLoading(false);
     }

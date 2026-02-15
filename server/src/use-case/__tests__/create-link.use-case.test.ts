@@ -1,73 +1,111 @@
 import { createLink } from '../create-link.use-case';
 import { LinkShorterRepository } from '../../repository/link-shorter.repository';
-import * as uuidUtils from '../../utils';
+import { LinkAlreadyExistsError } from '../../errors';
+import { generateUuid } from '../../utils';
 
 jest.mock('../../repository/link-shorter.repository');
 jest.mock('../../utils', () => ({
-  __esModule: true,
   ...jest.requireActual('../../utils'),
   generateUuid: jest.fn(),
 }));
 
-
-
-describe('createLink', () => {
-  const mockGenerateUuid = uuidUtils.generateUuid as jest.MockedFunction<
-    typeof uuidUtils.generateUuid
-  >;
+describe('createLink use case', () => {
   const mockSave = LinkShorterRepository.save as jest.MockedFunction<
     typeof LinkShorterRepository.save
   >;
+  const mockFindByShortLink = LinkShorterRepository.findByShortLink as jest.MockedFunction<
+    typeof LinkShorterRepository.findByShortLink
+  >;
+  const mockGenerateUuid = generateUuid as jest.MockedFunction<typeof generateUuid>;
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should create a new link with generated UUID', async () => {
+  it('should create a link successfully when protocol is present', async () => {
     // Arrange
     const input = {
-      link: 'https://www.example.com/very-long-url',
-      shortLink: 'abc123',
+      link: 'https://google.com',
+      shortLink: 'google',
     };
-
-    const mockUuid = '550e8400-e29b-41d4-a716-446655440000';
+    const mockId = 'uuid-v7';
     const mockSavedLink = {
-      id: mockUuid,
+      id: mockId,
       link: input.link,
       shortLink: input.shortLink,
-      createdAt: new Date('2024-01-01'),
-      updatedAt: new Date('2024-01-01'),
+      createdAt: new Date(),
+      updatedAt: new Date(),
       accessCount: 0,
     };
 
-    mockGenerateUuid.mockReturnValue(mockUuid);
-    mockSave.mockResolvedValue(mockSavedLink);
+    mockFindByShortLink.mockResolvedValue(null);
+    mockGenerateUuid.mockReturnValue(mockId);
+    mockSave.mockResolvedValue(mockSavedLink as any);
 
     // Act
     const result = await createLink(input);
 
     // Assert
-    expect(mockGenerateUuid).toHaveBeenCalledTimes(1);
+    expect(mockFindByShortLink).toHaveBeenCalledWith(input.shortLink);
     expect(mockSave).toHaveBeenCalledWith({
-      id: mockUuid,
+      id: mockId,
       link: input.link,
       shortLink: input.shortLink,
     });
     expect(result).toEqual(mockSavedLink);
   });
 
-  it('should propagate errors from repository', async () => {
+  it('should prepend http:// when protocol is missing', async () => {
     // Arrange
     const input = {
-      link: 'https://www.example.com/test',
-      shortLink: 'test123',
+      link: 'google.com',
+      shortLink: 'google',
+    };
+    const mockId = 'uuid-v7';
+    const expectedLink = 'http://google.com';
+    const mockSavedLink = {
+      id: mockId,
+      link: expectedLink,
+      shortLink: input.shortLink,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      accessCount: 0,
     };
 
-    const mockError = new Error('Database error');
-    mockGenerateUuid.mockReturnValue('mock-uuid');
-    mockSave.mockRejectedValue(mockError);
+    mockFindByShortLink.mockResolvedValue(null);
+    mockGenerateUuid.mockReturnValue(mockId);
+    mockSave.mockResolvedValue(mockSavedLink as any);
+
+    // Act
+    const result = await createLink(input);
+
+    // Assert
+    expect(mockSave).toHaveBeenCalledWith({
+      id: mockId,
+      link: expectedLink,
+      shortLink: input.shortLink,
+    });
+    expect(result.link).toBe(expectedLink);
+  });
+
+  it('should throw LinkAlreadyExistsError when shortLink already exists', async () => {
+    // Arrange
+    const input = {
+      link: 'https://google.com',
+      shortLink: 'google',
+    };
+    const existingLink = {
+      id: 'existing-id',
+      link: 'https://other.com',
+      shortLink: input.shortLink,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    mockFindByShortLink.mockResolvedValue(existingLink as any);
 
     // Act & Assert
-    await expect(createLink(input)).rejects.toThrow('Database error');
+    await expect(createLink(input)).rejects.toThrow(LinkAlreadyExistsError);
+    expect(mockSave).not.toHaveBeenCalled();
   });
 });
