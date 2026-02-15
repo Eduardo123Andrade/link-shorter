@@ -16,10 +16,7 @@ export default function Home() {
         </header>
 
         <div className="w-full flex flex-col gap-6 md:grid md:grid-cols-[2fr_3fr] md:items-start md:gap-5">
-          <section className="w-full flex flex-col gap-8 bg-white/10 p-4 rounded-2xl sm:p-6">
-            <h1 className="text-xl text-gray-200 font-bold tracking-tight">
-              Novo link
-            </h1>
+          <section className="w-full p-4 sm:p-6 bg-white/10 rounded-2xl">
             <CreateLinkForm fetchLinks={fetchLinks} />
           </section>
 

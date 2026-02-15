@@ -11,7 +11,11 @@ export function CreateLinkForm({ fetchLinks }: CreateLinkFormProps) {
   const { register, handleSubmit, formState: { errors, isValid } } = form;
 
   return (
-    <div className="w-full">
+    <div className="w-full flex flex-col gap-4">
+      <h1 className="text-xl text-gray-200 font-bold tracking-tight">
+        Novo link
+      </h1>
+
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="space-y-2">
           <TextInput
