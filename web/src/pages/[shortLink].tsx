@@ -1,22 +1,50 @@
 import { useRouter } from 'next/router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { API_URL } from '../lib/api';
 import { LogoIcon } from '@/components/LogoIcon';
-
 
 export default function ShortLinkPage() {
   const router = useRouter();
   const { shortLink } = router.query;
+  const [validating, setValidating] = useState(true);
 
   useEffect(() => {
     if (!shortLink) return;
+
+    const validate = async () => {
+      try {
+        const response = await fetch(`${API_URL}/${shortLink}`, {
+          method: 'GET',
+          redirect: 'manual',
+          headers: { Purpose: 'prefetch' },
+        });
+
+        if (response.type === 'opaqueredirect' || response.ok || response.status === 302) {
+          setValidating(false);
+        } else {
+          router.replace('/404');
+        }
+      } catch {
+        router.replace('/404');
+      }
+    };
+
+    validate();
+  }, [shortLink, router]);
+
+  useEffect(() => {
+    if (!shortLink || validating) return;
 
     const timer = setTimeout(() => {
       window.location.href = `${API_URL}/${shortLink}`;
     }, 3000);
 
     return () => clearTimeout(timer);
-  }, [shortLink]);
+  }, [shortLink, validating]);
+
+  if (validating) {
+    return null;
+  }
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-900 p-4 font-sans text-gray-100">
@@ -32,7 +60,7 @@ export default function ShortLinkPage() {
           <br />
           Nao foi redirecionado?{' '}
           <a
-            href={shortLink ? `${API_URL}/${shortLink}` : '#'}
+            href={`${API_URL}/${shortLink}`}
             className="text-blue-base font-medium hover:underline"
           >
             Acesse aqui
