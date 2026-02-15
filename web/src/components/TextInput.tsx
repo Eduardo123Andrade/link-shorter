@@ -51,7 +51,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
 
           <input
             ref={ref}
-            className="flex-1 bg-transparent text-gray-600 placeholder:text-gray-400 focus:outline-none focus:placeholder-transparent"
+            className="flex-1 bg-transparent text-gray-400 placeholder:text-gray-400 focus:outline-none focus:placeholder-transparent"
             {...props}
           />
         </div>
@@ -59,7 +59,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
         {error && (
           <div className="flex items-center gap-1">
             <WarningIcon className="text-danger" size={16} />
-            <span className="text-xs text-gray-500">{error}</span>
+            <span className="text-xs text-gray-400">{error}</span>
           </div>
         )}
       </div>
