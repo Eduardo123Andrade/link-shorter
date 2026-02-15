@@ -10,7 +10,7 @@ export function useCreateLink(fetchLinks: () => Promise<void>) {
 
   const form = useForm<CreateLinkFormData>({
     resolver: zodResolver(createLinkSchema),
-    mode: 'onChange',
+    mode: 'onBlur',
     defaultValues: {
       originalUrl: '',
       customSuffix: '',
