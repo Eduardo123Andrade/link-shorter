@@ -18,22 +18,6 @@ model Link {
   updatedAt   DateTime @updatedAt @map("updated_at")
   accessCount Int      @default(0) @map("access_count")
 
-  // Relacionamento com acessos
-  accesses LinkAccess[]
-
   @@index([shortLink])
   @@map("links")
-}
-
-model LinkAccess {
-  id         String   @id @default(dbgenerated("uuid_generate_v7()")) @db.Uuid
-  linkId     String   @map("link_id") @db.Uuid
-  accessedAt DateTime @default(now()) @map("accessed_at")
-
-  // Relacionamento com o link
-  link Link @relation(fields: [linkId], references: [id], onDelete: Cascade)
-
-  @@index([linkId])
-  @@index([accessedAt])
-  @@map("link_accesses")
 }
