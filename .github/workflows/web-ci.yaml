@@ -1,0 +1,24 @@
+name: Web CI
+
+on:
+  push:
+    branches: [main, dev]
+    paths:
+      - "web/**"
+  pull_request:
+    paths:
+      - "web/**"
+
+concurrency:
+  group: web-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  setup:
+    name: Setup
+    uses: ./.github/workflows/web-setup.yaml
+
+  lint:
+    name: Code Quality
+    needs: [setup]
+    uses: ./.github/workflows/web-lint.yaml

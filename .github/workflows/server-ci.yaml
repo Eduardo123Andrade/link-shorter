@@ -1,0 +1,34 @@
+name: Server CI
+
+on:
+  push:
+    branches: [main, dev]
+    paths:
+      - "server/**"
+  pull_request:
+    paths:
+      - "server/**"
+
+concurrency:
+  group: server-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  setup:
+    name: Setup
+    uses: ./.github/workflows/server-setup.yaml
+
+  lint:
+    name: Code Quality
+    needs: [setup]
+    uses: ./.github/workflows/server-lint.yaml
+
+  tests:
+    name: Test Suite
+    needs: [setup]
+    uses: ./.github/workflows/server-tests.yaml
+
+  build:
+    name: Build Image
+    needs: [lint, tests]
+    uses: ./.github/workflows/server-build.yaml
