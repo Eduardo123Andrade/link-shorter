@@ -37,8 +37,9 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma/client ./node_modules/@prisma/client
 
-# Copy prisma schema (needed at runtime for migrations)
+# Copy prisma schema and config (needed at runtime for migrations)
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/prisma.config.ts ./
 
 # Copy compiled output
 COPY --from=builder /app/dist ./dist
