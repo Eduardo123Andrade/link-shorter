@@ -55,14 +55,6 @@ const taskDefinition = new aws.ecs.TaskDefinition(
             },
           ],
           environment,
-          logConfiguration: {
-            logDriver: 'awslogs',
-            options: {
-              'awslogs-group': `/ecs/link-shorter-${stack}`,
-              'awslogs-region': 'us-east-2',
-              'awslogs-stream-prefix': 'ecs',
-            },
-          },
         },
       ])
     ),
