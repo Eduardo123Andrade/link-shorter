@@ -1,10 +1,11 @@
 name: Web CI
 
 on:
-  push:
-    branches: [main, dev, ci-cd]
-    paths:
-      - "web/**"
+  workflow_call:
+    inputs:
+      deploy:
+        type: boolean
+        default: false
   pull_request:
     paths:
       - "web/**"
@@ -31,6 +32,6 @@ jobs:
   deploy:
     name: Deploy
     needs: [build]
-    if: github.event_name == 'push'
+    if: inputs.deploy == true
     uses: ./.github/workflows/web-deploy.yaml
     secrets: inherit

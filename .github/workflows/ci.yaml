@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev, ci-cd]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  server:
+    name: Server CI
+    uses: ./.github/workflows/server-ci.yaml
+    with:
+      deploy: true
+    secrets: inherit
+
+  web:
+    name: Web CI
+    needs: [server]
+    uses: ./.github/workflows/web-ci.yaml
+    with:
+      deploy: true
+    secrets: inherit
