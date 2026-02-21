@@ -93,7 +93,10 @@ const service = new aws.ecs.Service(
     ],
     tags,
   },
-  resourceOptions
+  {
+    ...resourceOptions,
+    ignoreChanges: [...(resourceOptions.ignoreChanges || []), 'taskDefinition', 'desiredCount'],
+  }
 )
 
 export const clusterName = cluster.name
