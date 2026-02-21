@@ -39,3 +39,10 @@ jobs:
     if: github.event_name == 'push'
     uses: ./.github/workflows/server-infra.yaml
     secrets: inherit
+
+  deploy:
+    name: Deploy
+    needs: [infra]
+    if: github.event_name == 'push'
+    uses: ./.github/workflows/server-deploy.yaml
+    secrets: inherit
