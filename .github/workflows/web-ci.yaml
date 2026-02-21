@@ -22,3 +22,15 @@ jobs:
     name: Code Quality
     needs: [setup]
     uses: ./.github/workflows/web-lint.yaml
+
+  build:
+    name: Build
+    needs: [lint]
+    uses: ./.github/workflows/web-build.yaml
+
+  deploy:
+    name: Deploy
+    needs: [build]
+    if: github.event_name == 'push'
+    uses: ./.github/workflows/web-deploy.yaml
+    secrets: inherit
