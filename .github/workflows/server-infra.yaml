@@ -1,0 +1,84 @@
+name: Server - Infrastructure
+
+on:
+  workflow_call:
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+      AWS_REGION:
+        required: true
+      DATABASE_URL:
+        required: true
+      BASE_URL:
+        required: true
+      PULUMI_CONFIG_PASSPHRASE:
+        required: true
+      PULUMI_BACKEND_URL:
+        required: true
+
+jobs:
+  infra:
+    name: Pulumi Up
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+
+      - name: Resolve stack name
+        id: stack
+        run: |
+          case "${{ github.ref }}" in
+            refs/heads/main) echo "name=prod" >> $GITHUB_OUTPUT ;;
+            refs/heads/dev)  echo "name=dev"  >> $GITHUB_OUTPUT ;;
+            *)               echo "name=dev"  >> $GITHUB_OUTPUT ;;
+          esac
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Install infra dependencies
+        working-directory: server/infra
+        run: yarn install --frozen-lockfile
+
+      - name: Install Pulumi CLI
+        uses: pulumi/actions@v5
+        with:
+          command: version
+
+      - name: Pulumi login (S3 backend)
+        run: pulumi login ${{ secrets.PULUMI_BACKEND_URL }}
+
+      - name: Pulumi stack select or init
+        working-directory: server/infra
+        run: |
+          pulumi stack select organization/link-shorter/${{ steps.stack.outputs.name }} 2>/dev/null || \
+          pulumi stack init organization/link-shorter/${{ steps.stack.outputs.name }}
+
+      - name: Pulumi Up
+        working-directory: server/infra
+        run: pulumi up --yes
+        env:
+          PORT: "3001"
+          NODE_ENV: production
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          BASE_URL: ${{ secrets.BASE_URL }}
+
+      - name: Infra Summary
+        run: |
+          echo "## Infrastructure Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Pulumi up concluído" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Stack:** ${{ steps.stack.outputs.name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Backend:** ${{ secrets.PULUMI_BACKEND_URL }}" >> $GITHUB_STEP_SUMMARY

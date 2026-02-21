@@ -32,3 +32,10 @@ jobs:
     name: Build Image
     needs: [lint, tests]
     uses: ./.github/workflows/server-build.yaml
+
+  infra:
+    name: Infrastructure
+    needs: [build]
+    if: github.event_name == 'push'
+    uses: ./.github/workflows/server-infra.yaml
+    secrets: inherit
