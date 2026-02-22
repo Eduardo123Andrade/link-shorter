@@ -57,4 +57,4 @@ new aws.s3.BucketPolicy(
 )
 
 export const websiteBucketName = websiteBucket.id
-export const websiteUrl = pulumi.interpolate`http://${websiteBucket.id}.s3-website-us-east-2.amazonaws.com`
+export const websiteUrl = pulumi.interpolate`http://${websiteBucket.id}.s3-website.us-east-2.amazonaws.com`
