@@ -54,4 +54,4 @@ jobs:
           echo "✅ Web deployed to S3" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Bucket:** link-shorter-web-${{ needs.resolve-env.outputs.environment }}" >> $GITHUB_STEP_SUMMARY
-          echo "**URL:** http://link-shorter-web-${{ needs.resolve-env.outputs.environment }}.s3-website-${{ env.AWS_REGION }}.amazonaws.com" >> $GITHUB_STEP_SUMMARY
+          echo "**URL:** http://link-shorter-web-${{ needs.resolve-env.outputs.environment }}.s3-website.${{ env.AWS_REGION }}.amazonaws.com" >> $GITHUB_STEP_SUMMARY

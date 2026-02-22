@@ -28,6 +28,7 @@ jobs:
     name: Build
     needs: [lint]
     uses: ./.github/workflows/web-build.yaml
+    secrets: inherit
 
   deploy:
     name: Deploy

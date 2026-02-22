@@ -7,8 +7,6 @@ on:
         type: boolean
         default: false
   pull_request:
-    paths:
-      - "server/**"
 
 concurrency:
   group: server-ci-${{ github.ref }}
@@ -34,16 +32,9 @@ jobs:
     needs: [lint, tests]
     uses: ./.github/workflows/server-build.yaml
 
-  infra:
-    name: Infrastructure
-    needs: [build]
-    if: inputs.deploy == true
-    uses: ./.github/workflows/server-infra.yaml
-    secrets: inherit
-
   deploy:
     name: Deploy
-    needs: [infra]
+    needs: [build]
     if: inputs.deploy == true
     uses: ./.github/workflows/server-deploy.yaml
     secrets: inherit

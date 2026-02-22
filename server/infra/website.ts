@@ -30,7 +30,7 @@ new aws.s3.BucketWebsiteConfigurationV2(
   {
     bucket: websiteBucket.id,
     indexDocument: { suffix: 'index.html' },
-    errorDocument: { key: '404.html' },
+    errorDocument: { key: 'shortlink/index.html' },
   },
   resourceOptions
 )
@@ -57,4 +57,4 @@ new aws.s3.BucketPolicy(
 )
 
 export const websiteBucketName = websiteBucket.id
-export const websiteUrl = pulumi.interpolate`http://${websiteBucket.id}.s3-website-us-east-2.amazonaws.com`
+export const websiteUrl = pulumi.interpolate`http://${websiteBucket.id}.s3-website.us-east-2.amazonaws.com`

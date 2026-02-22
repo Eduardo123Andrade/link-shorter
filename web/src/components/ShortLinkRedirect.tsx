@@ -1,25 +1,34 @@
-import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { API_URL } from '../lib/api';
 import { LogoIcon } from '@/components/LogoIcon';
 import { useValidateLink } from '@/hooks/useValidateLink';
 
-export default function ShortLinkPage() {
-  const router = useRouter();
-  const { shortLink } = router.query;
-  const { validating } = useValidateLink(shortLink);
+interface ShortLinkRedirectProps {
+  shortLink: string;
+  onInvalid: () => void;
+}
+
+export function ShortLinkRedirect({ shortLink, onInvalid }: ShortLinkRedirectProps) {
+  const { loading, isValid } = useValidateLink(shortLink);
 
   useEffect(() => {
-    if (!shortLink || validating) return;
+    if (loading) return;
 
-    const timer = setTimeout(() => {
-      window.location.href = `${API_URL}/${shortLink}`;
-    }, 3000);
+    if (isValid === false) {
+      onInvalid();
+      return;
+    }
 
-    return () => clearTimeout(timer);
-  }, [shortLink, validating]);
+    if (isValid) {
+      const timer = setTimeout(() => {
+        window.location.href = `${API_URL}/${shortLink}`;
+      }, 3000);
 
-  if (validating) {
+      return () => clearTimeout(timer);
+    }
+  }, [loading, isValid, shortLink, onInvalid]);
+
+  if (loading) {
     return null;
   }
 
