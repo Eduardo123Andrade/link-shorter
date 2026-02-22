@@ -11,12 +11,12 @@
             "destination": "/favicon.ico"
         },
         {
-            "source": "/404",
-            "destination": "/404.html"
+            "source": "/shortlink",
+            "destination": "/shortlink/index.html"
         },
         {
             "source": "/:shortLink",
-            "destination": "/[shortLink].html"
+            "destination": "/shortlink/index.html"
         }
     ]
 }

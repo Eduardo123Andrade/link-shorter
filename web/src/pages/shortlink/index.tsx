@@ -1,30 +1,36 @@
 import { useRouter } from 'next/router';
-import { useEffect } from 'react';
-import { API_URL } from '../lib/api';
+import { useEffect, useState } from 'react';
 import { LogoIcon } from '@/components/LogoIcon';
 import { useValidateLink } from '@/hooks/useValidateLink';
+import { API_URL } from '@/lib/api';
 
 export default function ShortLinkPage() {
   const router = useRouter();
-  const { shortLink } = router.query;
-  const { loading, isValid } = useValidateLink(shortLink);
+  const [path, setPath] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!shortLink || loading) return;
+    setPath(window.location.pathname.substring(1));
+  }, []);
+
+  const { loading, isValid } = useValidateLink(path || '');
+
+  useEffect(() => {
+    if (!path || loading) return;
 
     if (isValid === false) {
+      console.log('Invalid link');
       router.replace('/404');
       return;
     }
 
     if (isValid) {
       const timer = setTimeout(() => {
-        window.location.href = `${API_URL}/${shortLink}`;
+        window.location.href = `${API_URL}/${path}`;
       }, 3000);
 
       return () => clearTimeout(timer);
     }
-  }, [shortLink, loading, isValid, router]);
+  }, [path, loading, isValid, router]);
 
   if (loading) {
     return null;
@@ -44,7 +50,7 @@ export default function ShortLinkPage() {
           <br />
           Nao foi redirecionado?{' '}
           <a
-            href={`${API_URL}/${shortLink}`}
+            href={`${API_URL}/${path}`}
             className="text-blue-base font-medium hover:underline"
           >
             Acesse aqui
