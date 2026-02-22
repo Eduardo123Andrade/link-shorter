@@ -21,7 +21,7 @@ jobs:
         id: set-env
         run: |
           case "${{ github.ref }}" in
-            refs/heads/main) echo "environment=prod" >> $GITHUB_OUTPUT ;;
+            refs/heads/main) echo "environment=dev" >> $GITHUB_OUTPUT ;;
             refs/heads/dev)  echo "environment=dev"  >> $GITHUB_OUTPUT ;;
             *)               echo "environment=dev"  >> $GITHUB_OUTPUT ;;
           esac
