@@ -30,6 +30,8 @@ jobs:
 
       - name: Build
         working-directory: web
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
         run: yarn build
 
       - name: Upload build artifact
