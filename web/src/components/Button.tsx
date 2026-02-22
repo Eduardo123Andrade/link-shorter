@@ -38,6 +38,7 @@ interface ButtonProps extends ComponentProps<"button">, VariantProps<typeof butt
 export function Button({ children, className, variant, size, loading, disabled, ...props }: ButtonProps) {
   return (
     <button
+      type={props.type || "button"}
       className={button({ variant, size, className })}
       disabled={loading || disabled}
       {...props}

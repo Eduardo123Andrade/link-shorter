@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
 import { API_URL } from '../lib/api';
 
 export function useValidateLink(shortLink: string | undefined | string[]) {
@@ -7,6 +6,8 @@ export function useValidateLink(shortLink: string | undefined | string[]) {
   const [isValid, setIsValid] = useState<boolean | null>(null);
 
   useEffect(() => {
+    console.log(shortLink);
+    console.log(`${API_URL}/${shortLink}`)
     if (!shortLink) {
       setLoading(false);
       return;
@@ -20,6 +21,8 @@ export function useValidateLink(shortLink: string | undefined | string[]) {
           redirect: 'manual',
           headers: { Purpose: 'prefetch' },
         });
+
+        console.log(response);
 
         if (
           response.type === 'opaqueredirect' ||
