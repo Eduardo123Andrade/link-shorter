@@ -3,6 +3,8 @@ name: CI
 on:
   push:
     branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -36,13 +38,13 @@ jobs:
     if: always() && needs.changes.outputs.server_app == 'true'
     uses: ./.github/workflows/server-ci.yaml
     with:
-      deploy: true
+      deploy: ${{ github.event_name == 'push' }}
     secrets: inherit
 
   infra:
     name: Infrastructure
     needs: [changes, server]
-    if: always() && needs.changes.outputs.server_infra == 'true' && (needs.server.result == 'success' || needs.server.result == 'skipped')
+    if: always() && needs.changes.outputs.server_infra == 'true' && (needs.server.result == 'success' || needs.server.result == 'skipped') && github.event_name == 'push'
     uses: ./.github/workflows/server-infra.yaml
     secrets: inherit
 
@@ -52,5 +54,5 @@ jobs:
     if: always() && needs.changes.outputs.web == 'true' && (needs.infra.result == 'success' || needs.infra.result == 'skipped')
     uses: ./.github/workflows/web-ci.yaml
     with:
-      deploy: true
+      deploy: ${{ github.event_name == 'push' }}
     secrets: inherit
