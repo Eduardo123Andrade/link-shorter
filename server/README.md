@@ -1,176 +1,180 @@
-# Link Shorter - Server
+# Link Shorter — Server
 
-Backend do encurtador de links construído com Fastify, Prisma e PostgreSQL.
+The backend API for the Link Shorter project. Built with **Fastify** and **TypeScript**, it provides a REST API for creating, retrieving, and deleting shortened links, as well as a **WebSocket** endpoint for real-time access count updates.
 
-## 🚀 Quick Start
+## Tech Stack
 
-### Opção 1: Script Automático (Recomendado)
+- **Runtime:** Node.js 22
+- **Framework:** Fastify 5
+- **ORM:** Prisma 7 (PostgreSQL)
+- **Language:** TypeScript 5
+- **Validation:** Zod 4
+- **Testing:** Jest 30
+- **API Docs:** Swagger (via `@fastify/swagger`)
+- **Infrastructure:** Pulumi (AWS)
 
-```bash
-./scripts/init-dev.sh
-```
-
-Este script irá:
-- ✅ Iniciar containers Docker
-- ✅ Instalar dependências
-- ✅ Gerar Prisma Client
-- ✅ Aplicar migrações
-- ✅ Configurar banco de teste
-
-### Opção 2: Passo a Passo Manual
-
-```bash
-# 1. Iniciar Docker
-npm run docker:up
-
-# 2. Instalar dependências
-yarn install
-
-# 3. Gerar Prisma Client
-npm run prisma:generate
-
-# 4. Aplicar migrações
-npm run prisma:migrate
-
-# 5. Configurar banco de teste
-npm run test:setup
-```
-
-## 📦 Scripts Disponíveis
-
-### Desenvolvimento
-```bash
-npm run dev              # Inicia o servidor em modo watch
-npm run build            # Compila o TypeScript
-npm run start            # Inicia o servidor compilado
-npm run setup            # Setup completo (docker + prisma)
-```
-
-### Prisma
-```bash
-npm run prisma:generate      # Gera o Prisma Client
-npm run prisma:migrate       # Cria e aplica migrações (dev)
-npm run prisma:migrate:test  # Aplica migrações no banco de teste
-npm run prisma:studio        # Abre o Prisma Studio
-```
-
-### Testes
-```bash
-npm test                 # Executa todos os testes
-npm run test:watch       # Executa testes em modo watch
-npm run test:setup       # Configura o banco de dados de teste
-```
-
-### Docker
-```bash
-npm run docker:up        # Inicia os containers
-npm run docker:down      # Para os containers
-npm run docker:logs      # Exibe logs dos containers
-npm run docker:restart   # Reinicia os containers
-npm run docker:clean     # Remove containers e volumes
-npm run docker:ps        # Lista containers em execução
-```
-
-## 🗄️ Banco de Dados
-
-### Desenvolvimento
-O banco de dados de desenvolvimento é configurado automaticamente via Docker:
-- Host: `localhost:5432`
-- Database: `link_shorter`
-- User: `postgres`
-- Password: `postgres`
-
-### Testes
-O banco de testes é separado e configurado via script:
-- Host: `localhost:5432`
-- Database: `link_shorter_test`
-- User: `postgres`
-- Password: `postgres`
-
-## 🧪 Executando Testes
-
-### Primeira vez
-
-```bash
-# Configure o banco de teste
-npm run test:setup
-
-# Execute os testes
-npm test
-```
-
-### Testes em desenvolvimento
-
-```bash
-npm run test:watch
-```
-
-## 📁 Estrutura do Projeto
+## Project Structure
 
 ```
 server/
-├── prisma/
-│   ├── migrations/          # Migrações do banco
-│   └── schema.prisma        # Schema do Prisma
 ├── src/
-│   ├── __tests__/           # Testes
-│   │   ├── repository/      # Testes de integração
-│   │   └── setup/           # Setup dos testes
-│   ├── generated/           # Prisma Client gerado
-│   ├── interfaces/          # Interfaces TypeScript
-│   ├── lib/                 # Bibliotecas e configs
-│   ├── repository/          # Camada de dados
-│   ├── utils/               # Utilitários
-│   └── server.ts            # Entrada da aplicação
-├── scripts/                 # Scripts de setup
-├── docker-compose.yml       # Configuração Docker
+│   ├── controller/       # Route handlers (create, delete, find links)
+│   ├── use-case/         # Business logic layer
+│   ├── repository/       # Data access layer (Prisma)
+│   ├── interfaces/       # TypeScript interfaces and types
+│   ├── lib/              # Shared utilities (Prisma client, event emitter)
+│   ├── helpers/          # Helper functions (e.g. slug validation)
+│   ├── errors/           # Custom domain error classes
+│   ├── events/           # Event listeners (e.g. link-accessed)
+│   ├── plugins/          # Fastify plugins (Swagger, WebSocket)
+│   ├── __tests__/        # Unit, integration, and e2e tests
+│   └── server.ts         # Application entry point
+├── prisma/
+│   ├── schema.prisma     # Database schema
+│   └── migrations/       # Prisma migration files
+├── infra/                # Pulumi IaC (AWS resources)
+├── Dockerfile            # Multi-stage Docker build
 └── package.json
 ```
 
-## 🔧 Variáveis de Ambiente
+## Architecture
 
-### `.env` (Desenvolvimento)
-```env
-NODE_ENV=development
-PORT=3333
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/link_shorter"
+The server follows a layered architecture:
+
+```
+Request
+  │
+  ▼
+Controller        ← validates input with Zod, calls use-case
+  │
+  ▼
+Use Case          ← business logic, orchestrates repositories and events
+  │
+  ▼
+Repository        ← data access, wraps Prisma client
+  │
+  ▼
+PostgreSQL
 ```
 
-### `.env.test` (Testes)
-```env
-NODE_ENV=test
-PORT=3334
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/link_shorter_test"
+An **event-driven** approach is used to decouple side effects. When a short link is accessed, a `link-accessed` event is emitted. A listener increments the `accessCount` in the database and broadcasts the update to all connected WebSocket clients.
+
+## Database Schema
+
+```prisma
+model Link {
+  id          String   @id @default(uuid_v7())
+  link        String   @db.Text
+  shortLink   String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  accessCount Int      @default(0)
+}
 ```
 
-## 🐛 Troubleshooting
+## API Endpoints
 
-### Erro de conexão com o banco
+Interactive API documentation is available at `http://localhost:3333/docs` (Swagger UI) when running locally.
+
+| Method | Path | Description |
+|---|---|---|
+| `GET` | `/health` | Health check |
+| `POST` | `/links` | Create a shortened link |
+| `GET` | `/links` | List all links |
+| `DELETE` | `/links/:id` | Delete a link |
+| `GET` | `/:shortLink` | Redirect to the original URL |
+| `WS` | `/ws` | WebSocket for real-time access count updates |
+
+## Environment Variables
+
+Copy `.env.example` and fill in the values:
 
 ```bash
-# Verifique se o Docker está rodando
-npm run docker:ps
-
-# Reinicie os containers
-npm run docker:restart
+cp .env.example .env
 ```
 
-### Erro nas migrações
+| Variable | Description | Example |
+|---|---|---|
+| `PORT` | Server port | `3333` |
+| `NODE_ENV` | Environment | `development` |
+| `DATABASE_URL` | PostgreSQL connection string | `postgresql://user:pass@localhost:5432/link_shorter` |
+| `FRONTEND_BASE_URL` | Frontend origin for CORS and redirect | `http://localhost:3001` |
+
+## Getting Started
+
+### With Docker Compose (recommended)
 
 ```bash
-# Limpe e recrie o banco
-npm run docker:clean
-npm run setup
+# Start all services (postgres + api)
+docker-compose up
+
+# Or start only the database
+docker-compose up postgres -d
 ```
 
-### Erro nos testes
+### Manually
 
 ```bash
-# Reconfigure o banco de teste
-npm run test:setup
-npm test
+# Install dependencies
+yarn install
+
+# Start the database
+yarn docker:up
+
+# Apply migrations
+yarn prisma:migrate
+
+# Start the dev server (with hot-reload)
+yarn dev
 ```
 
-## 📝 Licença
+The server will be available at `http://localhost:3333`.
 
-MIT
+## Available Scripts
+
+| Script | Description |
+|---|---|
+| `yarn dev` | Start development server with hot-reload |
+| `yarn build` | Compile TypeScript to `dist/` |
+| `yarn start` | Run compiled production server |
+| `yarn test` | Run all tests sequentially |
+| `yarn prisma:migrate` | Apply pending database migrations |
+| `yarn docker:up` | Start Docker services |
+| `yarn docker:down` | Stop Docker services |
+
+## Testing
+
+The project has three levels of automated tests:
+
+- **Unit tests** — test individual use-cases and helpers in isolation
+- **Integration tests** — test repositories against a real PostgreSQL database (port 5433)
+- **E2E tests** — test the full HTTP request/response cycle against a running server (port 5434)
+
+Each test level uses its own isolated database, managed via Docker Compose:
+
+```bash
+# Start all test databases
+docker-compose up postgres_test_integration postgres_test_e2e -d
+
+# Run all tests
+yarn test
+```
+
+## Deployment
+
+The server is deployed to **AWS ECS Fargate** as a Docker container.
+
+1. GitHub Actions builds and pushes the Docker image to **Amazon ECR**
+2. The ECS task definition is updated with the new image
+3. ECS performs a rolling deployment of the new task
+
+Infrastructure is managed with **Pulumi** (`server/infra/`):
+
+| File | Description |
+|---|---|
+| `vpc.ts` | VPC with public subnets |
+| `ecr.ts` | Container registry |
+| `ecs.ts` | ECS cluster, task definition, and service |
+| `alb.ts` | Application Load Balancer |
+| `security-groups.ts` | Security group rules |
+| `iam.ts` | IAM roles and policies |
