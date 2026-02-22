@@ -9,6 +9,7 @@ export default function ShortLinkPage() {
   const [path, setPath] = useState<string | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPath(window.location.pathname.substring(1));
   }, []);
 

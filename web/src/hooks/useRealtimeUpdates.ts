@@ -23,7 +23,7 @@ export function useRealtimeUpdates() {
             const { linkId, accessCount } = data.payload;
             updateLinkStats(linkId, accessCount);
           }
-        } catch (error) { }
+        } catch { }
       };
 
       socket.onclose = () => {

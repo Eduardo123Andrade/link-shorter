@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
 import { API_URL } from '../lib/api';
 
 export function useValidateLink(shortLink: string | undefined | string[]) {

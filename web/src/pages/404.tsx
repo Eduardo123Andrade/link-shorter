@@ -1,6 +1,4 @@
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ShortLinkRedirect } from '@/components/ShortLinkRedirect';
 
 const glitchLines = Array.from({ length: 8 }).map(() => ({
   width: 60 + Math.random() * 40,
