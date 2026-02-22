@@ -108,7 +108,7 @@ push to main/dev
 
 ### Environments
 
-- **`main` branch** — Production environment
+- **`main` branch** — Development environment (Temporary/Testing)
 - **`dev` branch** — Development environment
 
 Concurrency is configured per branch, so in-progress runs are cancelled when a new push arrives.
