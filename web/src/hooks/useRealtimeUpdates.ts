@@ -27,6 +27,7 @@ export function useRealtimeUpdates() {
       };
 
       socket.onclose = () => {
+        console.log('Socket closed');
         reconnectTimeout = setTimeout(connect, 3000);
       };
 
