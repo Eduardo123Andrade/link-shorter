@@ -18,6 +18,10 @@ const app = Fastify({
 
 // CORS
 app.register(cors, { origin: true, methods: ['GET', 'POST', 'PUT', 'DELETE'] });
+// app.register(cors, { 
+//   origin: '*', // Permitir que o SPA em portas diferentes chame 
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+// });
 
 // Zod type provider
 app.setValidatorCompiler(validatorCompiler);

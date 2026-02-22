@@ -41,7 +41,7 @@ describe('listAllLinksController', () => {
     expect(reply.send).toHaveBeenCalledWith(
       mockLinks.map((link) => ({
         ...link,
-        shortLink: `${env.BASE_URL}/${link.shortLink}`,
+        shortLink: `${env.FRONTEND_BASE_URL}/${link.shortLink}`,
       }))
     );
   });

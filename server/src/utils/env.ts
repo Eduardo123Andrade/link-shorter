@@ -5,7 +5,7 @@ const envSchema = z.object({
   PORT: z.coerce.number().default(3333),
   HOST: z.string().default("0.0.0.0"),
   DATABASE_URL: z.url(),
-  BASE_URL: z.url().default("http://localhost:3000"),
+  FRONTEND_BASE_URL: z.url().transform((url) => url.replace(/\/$/, '')),
 });
 
 const _env = envSchema.safeParse(process.env);

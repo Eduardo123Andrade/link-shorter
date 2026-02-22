@@ -1,9 +1,15 @@
-const API_PORT = 3333;
+const NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-function getHost() {
-  if (typeof window === 'undefined') return 'localhost';
-  return window.location.hostname;
+// Função utilitária básica para falback caso não haja variável configurada
+function getBaseUrl() {
+  if (NEXT_PUBLIC_API_URL) return NEXT_PUBLIC_API_URL;
+  
+  if (typeof window !== 'undefined') {
+    return `http://${window.location.hostname}:3333`;
+  }
+  
+  return 'http://localhost:3333';
 }
 
-export const API_URL = `http://${getHost()}:${API_PORT}`;
-export const WS_URL = `ws://${getHost()}:${API_PORT}/ws`;
+export const API_URL = getBaseUrl();
+export const WS_URL = API_URL.replace(/^http/, 'ws') + '/ws';

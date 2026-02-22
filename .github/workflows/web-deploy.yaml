@@ -1,0 +1,57 @@
+name: Web - Deploy
+
+on:
+  workflow_call:
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+
+jobs:
+  resolve-env:
+    name: Resolve Environment
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.set-env.outputs.environment }}
+    steps:
+      - name: Set environment
+        id: set-env
+        run: |
+          case "${{ github.ref }}" in
+            refs/heads/main) echo "environment=prod" >> $GITHUB_OUTPUT ;;
+            refs/heads/dev)  echo "environment=dev"  >> $GITHUB_OUTPUT ;;
+            *)               echo "environment=dev"  >> $GITHUB_OUTPUT ;;
+          esac
+
+  deploy:
+    name: Deploy to S3
+    needs: [resolve-env]
+    runs-on: ubuntu-latest
+    environment: ${{ needs.resolve-env.outputs.environment }}
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: web-build
+          path: out
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Sync to S3
+        run: |
+          aws s3 sync out/ s3://link-shorter-web-${{ needs.resolve-env.outputs.environment }} --delete
+
+      - name: Deploy Summary
+        run: |
+          echo "## Web Deploy Summary (${{ needs.resolve-env.outputs.environment }})" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Web deployed to S3" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Bucket:** link-shorter-web-${{ needs.resolve-env.outputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "**URL:** http://link-shorter-web-${{ needs.resolve-env.outputs.environment }}.s3-website.${{ env.AWS_REGION }}.amazonaws.com" >> $GITHUB_STEP_SUMMARY

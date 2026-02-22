@@ -38,7 +38,7 @@ describe("Link Routes (e2e)", () => {
       const body = response.json();
       expect(body.id).toBeDefined();
       expect(body.link).toBe("https://www.example.com");
-      expect(body.shortLink).toBe(`${env.BASE_URL}/example`);
+      expect(body.shortLink).toBe(`${env.FRONTEND_BASE_URL}/example`);
 
     });
 
@@ -165,8 +165,8 @@ describe("Link Routes (e2e)", () => {
       });
 
       const body = response.json();
-      expect(body[0].shortLink).toBe(`${env.BASE_URL}/second`);
-      expect(body[1].shortLink).toBe(`${env.BASE_URL}/first`);
+      expect(body[0].shortLink).toBe(`${env.FRONTEND_BASE_URL}/second`);
+      expect(body[1].shortLink).toBe(`${env.FRONTEND_BASE_URL}/first`);
     });
   });
 

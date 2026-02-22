@@ -1,0 +1,31 @@
+name: Server - Build Image
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Generate tag
+        id: generate-tag
+        run: |
+          SHA=$(echo $GITHUB_SHA | head -c7)
+          echo "tag=$SHA" >> $GITHUB_OUTPUT
+
+      - name: Build Image
+        env:
+          IMAGE_TAG: ${{ steps.generate-tag.outputs.tag }}
+        run: docker build -t link-shorter-server:$IMAGE_TAG ./server
+
+      - name: Build Summary
+        run: |
+          echo "## Server Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Docker image built successfully" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Image:** link-shorter-server:${{ steps.generate-tag.outputs.tag }}" >> $GITHUB_STEP_SUMMARY

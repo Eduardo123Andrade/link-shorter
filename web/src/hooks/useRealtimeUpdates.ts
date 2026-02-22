@@ -23,10 +23,11 @@ export function useRealtimeUpdates() {
             const { linkId, accessCount } = data.payload;
             updateLinkStats(linkId, accessCount);
           }
-        } catch (error) { }
+        } catch { }
       };
 
       socket.onclose = () => {
+        console.log('Socket closed');
         reconnectTimeout = setTimeout(connect, 3000);
       };
 

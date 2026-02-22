@@ -1,0 +1,130 @@
+name: Server - Deploy
+
+on:
+  workflow_call:
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+
+jobs:
+  resolve-env:
+    name: Resolve Environment
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.set-env.outputs.environment }}
+    steps:
+      - name: Set environment
+        id: set-env
+        run: |
+          case "${{ github.ref }}" in
+            refs/heads/main) echo "environment=prod" >> $GITHUB_OUTPUT ;;
+            refs/heads/dev)  echo "environment=dev"  >> $GITHUB_OUTPUT ;;
+            *)               echo "environment=dev"  >> $GITHUB_OUTPUT ;;
+          esac
+
+  push:
+    name: Push Image to ECR
+    needs: [resolve-env]
+    runs-on: ubuntu-latest
+    environment: ${{ needs.resolve-env.outputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Generate tag
+        id: generate-tag
+        run: |
+          SHA=$(echo $GITHUB_SHA | head -c7)
+          echo "tag=$SHA" >> $GITHUB_OUTPUT
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, Tag & Push Image
+        env:
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+          ECR_REPOSITORY: link-shorter-${{ needs.resolve-env.outputs.environment }}
+          IMAGE_TAG: ${{ steps.generate-tag.outputs.tag }}
+        run: |
+          ECR_IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker build -t $ECR_IMAGE ./server
+          docker push $ECR_IMAGE
+
+      - name: Push Summary
+        env:
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+          ECR_REPOSITORY: link-shorter-${{ needs.resolve-env.outputs.environment }}
+          IMAGE_TAG: ${{ steps.generate-tag.outputs.tag }}
+        run: |
+          echo "## Push Summary (${{ needs.resolve-env.outputs.environment }})" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Image pushed to ECR" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Registry:** $ECR_REGISTRY/$ECR_REPOSITORY" >> $GITHUB_STEP_SUMMARY
+          echo "**Tag:** $IMAGE_TAG" >> $GITHUB_STEP_SUMMARY
+
+  ecs:
+    name: Deploy to ECS
+    needs: [push, resolve-env]
+    runs-on: ubuntu-latest
+    environment: ${{ needs.resolve-env.outputs.environment }}
+    steps:
+      - name: Generate tag
+        id: generate-tag
+        run: |
+          SHA=$(echo $GITHUB_SHA | head -c7)
+          echo "tag=$SHA" >> $GITHUB_OUTPUT
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Download current task definition
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition link-shorter-${{ needs.resolve-env.outputs.environment }} \
+            --query taskDefinition \
+            > task-definition.json
+
+      - name: Render new image in task definition
+        id: render-task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: link-shorter-${{ needs.resolve-env.outputs.environment }}
+          image: ${{ steps.ecr-login.outputs.registry }}/link-shorter-${{ needs.resolve-env.outputs.environment }}:${{ steps.generate-tag.outputs.tag }}
+
+      - name: Deploy to ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.render-task-def.outputs.task-definition }}
+          service: link-shorter-service-${{ needs.resolve-env.outputs.environment }}
+          cluster: link-shorter-cluster-${{ needs.resolve-env.outputs.environment }}
+          wait-for-service-stability: true
+
+      - name: Deploy Summary
+        run: |
+          echo "## Deploy Summary (${{ needs.resolve-env.outputs.environment }})" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Deployed to ECS successfully" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Cluster:** link-shorter-cluster-${{ needs.resolve-env.outputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Service:** link-shorter-service-${{ needs.resolve-env.outputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Image tag:** ${{ steps.generate-tag.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
