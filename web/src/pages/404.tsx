@@ -52,6 +52,7 @@ export default function NotFoundPage() {
     const path = window.location.pathname.substring(1);
     // Valida se a rota tem cara de shortCode (sem barras adicionais)
     if (path && !path.includes('/')) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShortLink(path);
     }
   }, []);
