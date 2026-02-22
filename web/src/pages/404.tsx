@@ -1,4 +1,6 @@
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { ShortLinkRedirect } from '@/components/ShortLinkRedirect';
 
 const glitchLines = Array.from({ length: 8 }).map(() => ({
   width: 60 + Math.random() * 40,
@@ -44,6 +46,21 @@ function Glitch404() {
 }
 
 export default function NotFoundPage() {
+  const [shortLink, setShortLink] = useState<string | null>(null);
+
+  useEffect(() => {
+    const path = window.location.pathname.substring(1);
+    // Valida se a rota tem cara de shortCode (sem barras adicionais)
+    if (path && !path.includes('/')) {
+      setShortLink(path);
+    }
+  }, []);
+
+  // Se extraiu um shortLink suspeito, interceptamos a renderizacao com o redirect
+  if (shortLink) {
+    return <ShortLinkRedirect shortLink={shortLink} onInvalid={() => setShortLink(null)} />;
+  }
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-200 p-4 font-sans text-gray-600">
       <main className="flex w-full max-w-[580px] flex-col items-center gap-6 rounded-2xl bg-gray-100 px-8 py-14 text-center">

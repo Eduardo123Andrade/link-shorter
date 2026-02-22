@@ -3,11 +3,14 @@ import { useRouter } from 'next/router';
 import { API_URL } from '../lib/api';
 
 export function useValidateLink(shortLink: string | undefined | string[]) {
-  const [validating, setValidating] = useState(true);
-  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [isValid, setIsValid] = useState<boolean | null>(null);
 
   useEffect(() => {
-    if (!shortLink) return;
+    if (!shortLink) {
+      setLoading(false);
+      return;
+    }
 
     const validate = async () => {
       try {
@@ -23,17 +26,19 @@ export function useValidateLink(shortLink: string | undefined | string[]) {
           response.ok ||
           response.status === 302
         ) {
-          setValidating(false);
+          setIsValid(true);
         } else {
-          router.replace('/404');
+          setIsValid(false);
         }
       } catch {
-        router.replace('/404');
+        setIsValid(false);
+      } finally {
+        setLoading(false);
       }
     };
 
     validate();
-  }, [shortLink, router]);
+  }, [shortLink]);
 
-  return { validating };
+  return { loading, isValid };
 }
