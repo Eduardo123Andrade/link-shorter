@@ -1,0 +1,75 @@
+name: Server - Infrastructure
+
+on:
+  workflow_call:
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  PULUMI_BACKEND_URL: ${{ secrets.PULUMI_BACKEND_URL }}
+  PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
+
+jobs:
+  resolve-env:
+    name: Resolve Environment
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.set-env.outputs.environment }}
+    steps:
+      - name: Set environment
+        id: set-env
+        run: |
+          case "${{ github.ref }}" in
+            refs/heads/main) echo "environment=dev" >> $GITHUB_OUTPUT ;;
+            refs/heads/dev)  echo "environment=dev"  >> $GITHUB_OUTPUT ;;
+            *)               echo "environment=dev"  >> $GITHUB_OUTPUT ;;
+          esac
+
+  infra:
+    name: Provision Infrastructure
+    needs: [resolve-env]
+    runs-on: ubuntu-latest
+    environment: ${{ needs.resolve-env.outputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+
+      - name: Install infra dependencies
+        working-directory: server/infra
+        run: yarn install --frozen-lockfile
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Pulumi Up
+        uses: pulumi/actions@v5
+        with:
+          command: up
+          stack-name: organization/link-shorter/${{ needs.resolve-env.outputs.environment }}
+          work-dir: server/infra
+        env:
+          PULUMI_BACKEND_URL: ${{ env.PULUMI_BACKEND_URL }}
+          PULUMI_CONFIG_PASSPHRASE: ${{ env.PULUMI_CONFIG_PASSPHRASE }}
+          PORT: ${{ secrets.PORT }}
+          NODE_ENV: production
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          FRONTEND_BASE_URL: ${{ secrets.FRONTEND_BASE_URL }}
+
+      - name: Infra Summary
+        run: |
+          echo "## Infrastructure Summary (${{ needs.resolve-env.outputs.environment }})" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Infrastructure provisioned successfully" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Stack:** ${{ needs.resolve-env.outputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Backend:** ${{ env.PULUMI_BACKEND_URL }}" >> $GITHUB_STEP_SUMMARY

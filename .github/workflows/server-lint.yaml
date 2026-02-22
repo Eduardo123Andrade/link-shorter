@@ -1,0 +1,39 @@
+name: Server - Code Quality
+
+on:
+  workflow_call:
+
+jobs:
+  eslint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+
+      - name: Get cache week
+        id: cache-week
+        run: echo "week=$(date +%Y-%U)" >> $GITHUB_OUTPUT
+
+      - name: Restore node modules cache
+        uses: actions/cache@v4
+        with:
+          path: server/node_modules
+          key: ${{ runner.os }}-server-node-${{ steps.cache-week.outputs.week }}-${{ hashFiles('server/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-server-node-${{ steps.cache-week.outputs.week }}-
+
+      - name: Run ESLint
+        working-directory: server
+        run: yarn lint
+
+      - name: Lint Summary
+        run: |
+          echo "## Server Lint Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ ESLint passed" >> $GITHUB_STEP_SUMMARY

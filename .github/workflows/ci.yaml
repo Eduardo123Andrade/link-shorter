@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    outputs:
+      server_app: ${{ steps.filter.outputs.server_app }}
+      server_infra: ${{ steps.filter.outputs.server_infra }}
+      web: ${{ steps.filter.outputs.web }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            server_app:
+              - 'server/**'
+              - '!server/infra/**'
+            server_infra:
+              - 'server/infra/**'
+            web:
+              - 'web/**'
+
+  server:
+    name: Server CI
+    needs: [changes]
+    if: always() && needs.changes.outputs.server_app == 'true'
+    uses: ./.github/workflows/server-ci.yaml
+    with:
+      deploy: ${{ github.event_name == 'push' }}
+    secrets: inherit
+
+  infra:
+    name: Infrastructure
+    needs: [changes, server]
+    if: always() && needs.changes.outputs.server_infra == 'true' && (needs.server.result == 'success' || needs.server.result == 'skipped') && github.event_name == 'push'
+    uses: ./.github/workflows/server-infra.yaml
+    secrets: inherit
+
+  web:
+    name: Web CI
+    needs: [changes, infra]
+    if: always() && needs.changes.outputs.web == 'true' && (needs.infra.result == 'success' || needs.infra.result == 'skipped')
+    uses: ./.github/workflows/web-ci.yaml
+    with:
+      deploy: ${{ github.event_name == 'push' }}
+    secrets: inherit

@@ -1,3 +1,7 @@
 
 server/node_modules
 web/node_modules
+.vscode
+.workspace
+
+server/infra/node_modules

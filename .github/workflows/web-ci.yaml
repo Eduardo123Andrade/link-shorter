@@ -1,0 +1,38 @@
+name: Web CI
+
+on:
+  workflow_call:
+    inputs:
+      deploy:
+        type: boolean
+        default: false
+  pull_request:
+    paths:
+      - "web/**"
+
+concurrency:
+  group: web-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  setup:
+    name: Setup
+    uses: ./.github/workflows/web-setup.yaml
+
+  lint:
+    name: Code Quality
+    needs: [setup]
+    uses: ./.github/workflows/web-lint.yaml
+
+  build:
+    name: Build
+    needs: [lint]
+    uses: ./.github/workflows/web-build.yaml
+    secrets: inherit
+
+  deploy:
+    name: Deploy
+    needs: [build]
+    if: inputs.deploy == true
+    uses: ./.github/workflows/web-deploy.yaml
+    secrets: inherit
