@@ -20,12 +20,37 @@ export function LinkItem({
 }: LinkItemProps) {
   const { deleteLink, loading } = useDeleteLink();
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(shortUrl);
-    toast.info({ 
-      title: "Link copiado com sucesso",
-      message: `o link ${shortUrl} foi copiado para a área de transferência!`
-    });
+  const handleCopy = async () => {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(shortUrl);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = shortUrl;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        textArea.style.top = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        if (!successful) throw new Error('Copy command failed');
+      }
+
+      toast.info({ 
+        title: "Link copiado com sucesso",
+        message: `o link ${shortUrl} foi copiado para a área de transferência!`
+      });
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+      toast.error({ 
+        title: "Erro ao copiar", 
+        message: "Não foi possível copiar o link para a área de transferência." 
+      });
+    }
   };
 
   const onDelete = async () => {
