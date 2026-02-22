@@ -5,7 +5,7 @@ export const createLinkSchema = z.object({
   link: z
     .string({ message: ERROR_MESSAGES.LINK_URL_REQUIRED })
     .max(VALIDATION.LINK.MAX_LENGTH)
-    .regex(/^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/, ERROR_MESSAGES.INVALID_URL),
+    .regex(/^(https?:\/\/)?([\w.-]+)\.([a-zA-Z]{2,})([/?#]\S*)?$/, ERROR_MESSAGES.INVALID_URL),
   shortLink: z
     .string({ message: ERROR_MESSAGES.SHORT_LINK_REQUIRED })
     .min(VALIDATION.SHORT_LINK.MIN_LENGTH, ERROR_MESSAGES.SHORT_LINK_REQUIRED)
