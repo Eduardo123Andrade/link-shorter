@@ -15,6 +15,6 @@ export const createLinkController = async (
   return reply.status(HttpStatus.CREATED).send({
     id: createdLink.id,
     link: createdLink.link,
-    shortLink: `${env.BASE_URL}/${createdLink.shortLink}`,
+    shortLink: `${env.FRONTEND_BASE_URL}/${createdLink.shortLink}`,
   });
 };

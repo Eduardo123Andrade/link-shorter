@@ -10,7 +10,7 @@ export const listAllLinksController = async (
 
   const formattedLinks = links.map((link) => ({
     ...link,
-    shortLink: `${env.BASE_URL}/${link.shortLink}`,
+    shortLink: `${env.FRONTEND_BASE_URL}/${link.shortLink}`,
   }));
 
   return reply.status(HttpStatus.OK).send(formattedLinks);

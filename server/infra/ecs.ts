@@ -24,7 +24,7 @@ const envKeys = [
   'PORT',
   'NODE_ENV',
   'DATABASE_URL',
-  'BASE_URL',
+  'FRONTEND_BASE_URL',
 ]
 
 const environment = envKeys.map((key) => ({
