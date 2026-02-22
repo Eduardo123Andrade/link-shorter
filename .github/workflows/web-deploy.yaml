@@ -45,7 +45,7 @@ jobs:
 
       - name: Sync to S3
         run: |
-          aws s3 sync out/ s3://link-shorter-web-${{ needs.resolve-env.outputs.environment }} --delete
+          aws s3 sync out/ s3://link-shorter-web-${{ needs.resolve-env.outputs.environment }} --delete --acl public-read
 
       - name: Deploy Summary
         run: |

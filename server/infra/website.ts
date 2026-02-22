@@ -30,7 +30,7 @@ new aws.s3.BucketWebsiteConfigurationV2(
   {
     bucket: websiteBucket.id,
     indexDocument: { suffix: 'index.html' },
-    errorDocument: { key: '404.html' },
+    errorDocument: { key: 'index.html' },
   },
   resourceOptions
 )
