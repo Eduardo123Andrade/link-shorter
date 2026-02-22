@@ -65,7 +65,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@postgres:5432/${DB_NAME:-link_shorter}?schema=public
       - NODE_ENV=development
-      - BASE_URL=${BASE_URL:-http://localhost:3001}
+      - FRONTEND_BASE_URL=${FRONTEND_BASE_URL:-http://localhost:3001}
     depends_on:
       postgres:
         condition: service_healthy

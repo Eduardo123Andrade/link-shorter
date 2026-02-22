@@ -63,7 +63,7 @@ jobs:
           PORT: ${{ secrets.PORT }}
           NODE_ENV: production
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          BASE_URL: ${{ secrets.BASE_URL }}
+          FRONTEND_BASE_URL: ${{ secrets.FRONTEND_BASE_URL }}
 
       - name: Infra Summary
         run: |
