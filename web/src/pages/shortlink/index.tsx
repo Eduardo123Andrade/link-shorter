@@ -10,7 +10,7 @@ export default function ShortLinkPage() {
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setPath(window.location.pathname.substring(1));
+    setPath(window.location.pathname.substring(1).replace(/\/$/, ''));
   }, []);
 
   const { loading, isValid } = useValidateLink(path || '');

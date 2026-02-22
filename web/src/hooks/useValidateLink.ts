@@ -6,8 +6,6 @@ export function useValidateLink(shortLink: string | undefined | string[]) {
   const [isValid, setIsValid] = useState<boolean | null>(null);
 
   useEffect(() => {
-    console.log(shortLink);
-    console.log(`${API_URL}/${shortLink}`)
     if (!shortLink) {
       setLoading(false);
       return;
@@ -16,13 +14,12 @@ export function useValidateLink(shortLink: string | undefined | string[]) {
     const validate = async () => {
       try {
         const url = Array.isArray(shortLink) ? shortLink[0] : shortLink;
-        const response = await fetch(`${API_URL}/${url}`, {
+        const cleanUrl = url.replace(/\/$/, '');
+        const response = await fetch(`${API_URL}/${cleanUrl}`, {
           method: 'GET',
           redirect: 'manual',
           headers: { Purpose: 'prefetch' },
         });
-
-        console.log(response);
 
         if (
           response.type === 'opaqueredirect' ||
