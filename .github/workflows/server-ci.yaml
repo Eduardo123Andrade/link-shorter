@@ -6,9 +6,13 @@ on:
       deploy:
         type: boolean
         default: false
+      run_app_jobs:
+        type: boolean
+        default: true
+      run_infra_jobs:
+        type: boolean
+        default: true
   pull_request:
-    paths:
-      - "server/**"
 
 concurrency:
   group: server-ci-${{ github.ref }}
@@ -17,33 +21,37 @@ concurrency:
 jobs:
   setup:
     name: Setup
+    if: inputs.run_app_jobs == true
     uses: ./.github/workflows/server-setup.yaml
 
   lint:
     name: Code Quality
     needs: [setup]
+    if: inputs.run_app_jobs == true
     uses: ./.github/workflows/server-lint.yaml
 
   tests:
     name: Test Suite
     needs: [setup]
+    if: inputs.run_app_jobs == true
     uses: ./.github/workflows/server-tests.yaml
 
   build:
     name: Build Image
     needs: [lint, tests]
+    if: inputs.run_app_jobs == true
     uses: ./.github/workflows/server-build.yaml
 
   infra:
     name: Infrastructure
     needs: [build]
-    if: inputs.deploy == true
+    if: always() && inputs.deploy == true && inputs.run_infra_jobs == true && (needs.build.result == 'success' || needs.build.result == 'skipped')
     uses: ./.github/workflows/server-infra.yaml
     secrets: inherit
 
   deploy:
     name: Deploy
-    needs: [infra]
-    if: inputs.deploy == true
+    needs: [build, infra]
+    if: always() && inputs.deploy == true && inputs.run_app_jobs == true && (needs.build.result == 'success' || needs.build.result == 'skipped') && (needs.infra.result == 'success' || needs.infra.result == 'skipped')
     uses: ./.github/workflows/server-deploy.yaml
     secrets: inherit

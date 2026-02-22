@@ -9,16 +9,42 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    outputs:
+      server_app: ${{ steps.filter.outputs.server_app }}
+      server_infra: ${{ steps.filter.outputs.server_infra }}
+      web: ${{ steps.filter.outputs.web }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            server_app:
+              - 'server/**'
+              - '!server/infra/**'
+            server_infra:
+              - 'server/infra/**'
+            web:
+              - 'web/**'
+
   server:
     name: Server CI
+    needs: [changes]
+    if: needs.changes.outputs.server_app == 'true' || needs.changes.outputs.server_infra == 'true'
     uses: ./.github/workflows/server-ci.yaml
     with:
       deploy: true
+      run_app_jobs: ${{ needs.changes.outputs.server_app == 'true' }}
+      run_infra_jobs: ${{ needs.changes.outputs.server_infra == 'true' }}
     secrets: inherit
 
   web:
     name: Web CI
-    needs: [server]
+    needs: [changes]
+    if: needs.changes.outputs.web == 'true'
     uses: ./.github/workflows/web-ci.yaml
     with:
       deploy: true
