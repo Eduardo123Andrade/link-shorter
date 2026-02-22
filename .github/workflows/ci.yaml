@@ -33,18 +33,23 @@ jobs:
   server:
     name: Server CI
     needs: [changes]
-    if: needs.changes.outputs.server_app == 'true' || needs.changes.outputs.server_infra == 'true'
+    if: always() && needs.changes.outputs.server_app == 'true'
     uses: ./.github/workflows/server-ci.yaml
     with:
       deploy: true
-      run_app_jobs: ${{ needs.changes.outputs.server_app == 'true' }}
-      run_infra_jobs: ${{ needs.changes.outputs.server_infra == 'true' }}
+    secrets: inherit
+
+  infra:
+    name: Infrastructure
+    needs: [changes, server]
+    if: always() && needs.changes.outputs.server_infra == 'true' && (needs.server.result == 'success' || needs.server.result == 'skipped')
+    uses: ./.github/workflows/server-infra.yaml
     secrets: inherit
 
   web:
     name: Web CI
-    needs: [changes]
-    if: needs.changes.outputs.web == 'true'
+    needs: [changes, infra]
+    if: always() && needs.changes.outputs.web == 'true' && (needs.infra.result == 'success' || needs.infra.result == 'skipped')
     uses: ./.github/workflows/web-ci.yaml
     with:
       deploy: true
