@@ -55,7 +55,6 @@ export function LinkItem({
             Icon={TrashIcon} 
             title="Excluir link" 
             disabled={loading}
-            // className="hover:text-danger hover:border-danger hover:bg-danger/10"
           />
         </div>
       </div>
