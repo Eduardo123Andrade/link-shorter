@@ -1,8 +1,9 @@
-import { prisma } from '../lib/prisma';
+import { sql } from 'drizzle-orm';
+import { db } from '../lib/db';
 
 const checkDatabase = async () => {
   try {
-    await prisma.$queryRaw`SELECT 1`;
+    await db.execute(sql`SELECT 1`);
     return true;
   } catch {
     return false;
