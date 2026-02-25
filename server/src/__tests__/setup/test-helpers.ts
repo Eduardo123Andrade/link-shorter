@@ -1,16 +1,10 @@
-import { prisma, disconnectPrisma } from "../../lib/prisma";
+import { db, disconnectDb } from "../../lib/db";
+import { links } from "../../db/schema";
 
-/**
- * Limpa todas as tabelas do banco de dados de teste
- */
 export const cleanDatabase = async () => {
-
-  await prisma.link.deleteMany();
+  await db.delete(links);
 };
 
-/**
- * Fecha a conexão com o banco de dados
- */
 export const disconnectDatabase = async () => {
-  await disconnectPrisma();
+  await disconnectDb();
 };
