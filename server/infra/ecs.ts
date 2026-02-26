@@ -7,6 +7,7 @@ import { executionRoleArn, taskRoleArn } from './iam'
 import { targetGroupArn } from './alb'
 import { repositoryUrl } from './ecr'
 import { webCloudfrontUrl } from './website'
+import { reportsBucketName, reportsCloudfrontUrl } from './reports'
 
 const stack = pulumi.getStack()
 
@@ -37,10 +38,10 @@ const taskDefinition = new aws.ecs.TaskDefinition(
     requiresCompatibilities: ['FARGATE'],
     executionRoleArn,
     taskRoleArn,
-    // FRONTEND_BASE_URL vem direto do output do CloudFront — sem secret necessário
+    // URLs dinâmicas vêm dos outputs do CloudFront — sem secrets necessários
     containerDefinitions: pulumi
-      .all([repositoryUrl, webCloudfrontUrl])
-      .apply(([repoUrl, frontendUrl]) =>
+      .all([repositoryUrl, webCloudfrontUrl, reportsBucketName, reportsCloudfrontUrl])
+      .apply(([repoUrl, frontendUrl, bucketName, reportsUrl]) =>
         JSON.stringify([
           {
             name: containerName,
@@ -50,6 +51,8 @@ const taskDefinition = new aws.ecs.TaskDefinition(
             environment: [
               ...staticEnv,
               { name: 'FRONTEND_BASE_URL', value: frontendUrl },
+              { name: 'REPORTS_BUCKET_NAME', value: bucketName },
+              { name: 'CLOUDFRONT_REPORTS_URL', value: reportsUrl },
             ],
           },
         ])
