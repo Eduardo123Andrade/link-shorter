@@ -30,7 +30,7 @@ new aws.s3.BucketWebsiteConfigurationV2(
   {
     bucket: websiteBucket.id,
     indexDocument: { suffix: 'index.html' },
-    errorDocument: { key: 'shortlink/index.html' },
+    errorDocument: { key: 'index.html' },
   },
   resourceOptions
 )
@@ -56,5 +56,65 @@ new aws.s3.BucketPolicy(
   { ...resourceOptions, dependsOn: [publicAccessBlock] }
 )
 
+// CloudFront em frente ao S3 website para HTTPS + SPA routing
+const websiteEndpoint = pulumi.interpolate`${websiteBucket.id}.s3-website.us-east-2.amazonaws.com`
+
+const webCf = new aws.cloudfront.Distribution(
+  'web-cf',
+  {
+    origins: [
+      {
+        domainName: websiteEndpoint,
+        originId: 'web-s3-website-origin',
+        customOriginConfig: {
+          httpPort: 80,
+          httpsPort: 443,
+          originProtocolPolicy: 'http-only',
+          originSslProtocols: ['TLSv1.2'],
+        },
+      },
+    ],
+    enabled: true,
+    defaultRootObject: 'index.html',
+    defaultCacheBehavior: {
+      targetOriginId: 'web-s3-website-origin',
+      viewerProtocolPolicy: 'redirect-to-https',
+      allowedMethods: ['GET', 'HEAD'],
+      cachedMethods: ['GET', 'HEAD'],
+      forwardedValues: {
+        queryString: false,
+        cookies: { forward: 'none' },
+      },
+      minTtl: 0,
+      defaultTtl: 86400,
+      maxTtl: 31536000,
+    },
+    // SPA routing: qualquer 4xx do S3 devolve index.html com 200
+    customErrorResponses: [
+      {
+        errorCode: 403,
+        responseCode: 200,
+        responsePagePath: '/index.html',
+        errorCachingMinTtl: 0,
+      },
+      {
+        errorCode: 404,
+        responseCode: 200,
+        responsePagePath: '/index.html',
+        errorCachingMinTtl: 0,
+      },
+    ],
+    restrictions: {
+      geoRestriction: { restrictionType: 'none' },
+    },
+    viewerCertificate: {
+      cloudfrontDefaultCertificate: true,
+    },
+    tags,
+  },
+  resourceOptions
+)
+
 export const websiteBucketName = websiteBucket.id
 export const websiteUrl = pulumi.interpolate`http://${websiteBucket.id}.s3-website.us-east-2.amazonaws.com`
+export const webCloudfrontUrl = webCf.domainName.apply((d) => `https://${d}`)
