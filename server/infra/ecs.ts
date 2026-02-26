@@ -6,6 +6,7 @@ import { ecsSecurityGroupId } from './security-groups'
 import { executionRoleArn, taskRoleArn } from './iam'
 import { targetGroupArn } from './alb'
 import { repositoryUrl } from './ecr'
+import { webCloudfrontUrl } from './website'
 
 const stack = pulumi.getStack()
 
@@ -20,14 +21,8 @@ const cluster = new aws.ecs.Cluster(
 
 const containerName = `link-shorter-${stack}`
 
-const envKeys = [
-  'PORT',
-  'NODE_ENV',
-  'DATABASE_URL',
-  'FRONTEND_BASE_URL',
-]
-
-const environment = envKeys.map((key) => ({
+// Env vars estáticos: lidos do process.env (GitHub Secrets via Pulumi)
+const staticEnv = ['PORT', 'NODE_ENV', 'DATABASE_URL'].map((key) => ({
   name: key,
   value: process.env[key] ?? '',
 }))
@@ -42,22 +37,23 @@ const taskDefinition = new aws.ecs.TaskDefinition(
     requiresCompatibilities: ['FARGATE'],
     executionRoleArn,
     taskRoleArn,
-    containerDefinitions: repositoryUrl.apply((repoUrl) =>
-      JSON.stringify([
-        {
-          name: containerName,
-          image: `${repoUrl}:latest`,
-          essential: true,
-          portMappings: [
-            {
-              containerPort: 3001,
-              protocol: 'tcp',
-            },
-          ],
-          environment,
-        },
-      ])
-    ),
+    // FRONTEND_BASE_URL vem direto do output do CloudFront — sem secret necessário
+    containerDefinitions: pulumi
+      .all([repositoryUrl, webCloudfrontUrl])
+      .apply(([repoUrl, frontendUrl]) =>
+        JSON.stringify([
+          {
+            name: containerName,
+            image: `${repoUrl}:latest`,
+            essential: true,
+            portMappings: [{ containerPort: 3001, protocol: 'tcp' }],
+            environment: [
+              ...staticEnv,
+              { name: 'FRONTEND_BASE_URL', value: frontendUrl },
+            ],
+          },
+        ])
+      ),
     tags,
   },
   resourceOptions
