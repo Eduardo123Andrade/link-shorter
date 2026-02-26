@@ -4,13 +4,11 @@ import { LinkItem } from "./LinkItem";
 import { Separator } from "./Separator";
 
 import { useLinkStore } from "../store/linkStore";
-import { generateCsv, downloadCsv } from "../utils/csv";
+import { useDownloadReport } from "../hooks/useDownloadReport";
 
 interface LinkListProps {
   loading?: boolean;
 }
-
-const padStart = (value: number) => String(value).padStart(2, '0');
 
 const LinkSkeleton = () => (
   <div className="flex w-full animate-pulse flex-col gap-4">
@@ -25,16 +23,9 @@ const LinkSkeleton = () => (
 
 export function LinkList({ loading }: LinkListProps) {
   const links = useLinkStore((state) => state.links);
+  const { downloadReport, loading: reportLoading } = useDownloadReport();
 
   const hasLinks = links.length > 0;
-
-  const onDownloadCsv = () => {
-    const csvContent = generateCsv(links);
-    const date = new Date()
-    const timestamp = `${date.getFullYear()}-${padStart(date.getMonth())}-${padStart(date.getDate())}-${padStart(date.getHours())}-${padStart(date.getMinutes())}-${padStart(date.getSeconds())}`
-    const fileName = `meus-links-${timestamp}.csv`;
-    downloadCsv(csvContent, fileName);
-  };
 
   return (
     <div className="flex w-full flex-col gap-6 rounded-2xl bg-gray-100 p-4 sm:p-6">
@@ -42,9 +33,10 @@ export function LinkList({ loading }: LinkListProps) {
         <h2 className="w-full text-xl font-semibold text-gray-600">
           Meus links
         </h2>
-        <DownloadCsvButton 
-          onDownloadCsv={onDownloadCsv} 
-          disabled={!hasLinks || loading} 
+        <DownloadCsvButton
+          onDownloadCsv={downloadReport}
+          disabled={!hasLinks || loading}
+          loading={reportLoading}
         />
       </div>
 
