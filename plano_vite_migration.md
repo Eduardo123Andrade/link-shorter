@@ -231,7 +231,7 @@ export const ShortLink = ({ shortUrl }: ShortLinkProps) => (
 
 ---
 
-## 4.11 ⏳ Atualizar `web/src/styles/globals.css` — adicionar `@font-face`
+## 4.11 ✅ Atualizar `web/src/styles/globals.css` — adicionar `@font-face`
 
 Substituir `next/font/local` com CSS nativo. Adicionar antes do `@import "tailwindcss"`:
 
@@ -275,7 +275,7 @@ Atualizar a variável CSS `--font-sans` no `@theme`:
 
 ---
 
-## 4.12 ⏳ Atualizar `web/eslint.config.mjs`
+## 4.12 ✅ Atualizar `web/eslint.config.mjs`
 
 ```javascript
 import js from "@eslint/js";
@@ -311,7 +311,7 @@ VITE_API_URL=http://localhost:3333
 
 ---
 
-## 4.14 ⏳ Atualizar `web/.gitignore`
+## 4.14 ✅ Atualizar `web/.gitignore`
 
 ```diff
 -# next.js
@@ -330,7 +330,7 @@ VITE_API_URL=http://localhost:3333
 
 ---
 
-## 4.15 ⏳ Atualizar CI/CD workflows
+## 4.15 ✅ Atualizar CI/CD workflows
 
 ### `web-build.yaml`
 
@@ -380,11 +380,11 @@ Renomear no repositório → Settings → Secrets → Actions:
 | `web/src/pages/404.tsx` | ✅ |
 | `web/src/components/ShortLink.tsx` | ✅ |
 | `web/.env.local` | ✅ |
-| `web/src/styles/globals.css` | ⏳ @font-face |
-| `web/eslint.config.mjs` | ⏳ |
-| `web/.gitignore` | ⏳ |
-| `.github/workflows/web-build.yaml` | ⏳ |
-| `.github/workflows/web-deploy.yaml` | ⏳ |
+| `web/src/styles/globals.css` | ✅ |
+| `web/eslint.config.mjs` | ✅ |
+| `web/.gitignore` | ✅ |
+| `.github/workflows/web-build.yaml` | ✅ |
+| `.github/workflows/web-deploy.yaml` | ✅ |
 
 ### Deletados
 | Arquivo | Status |
@@ -392,10 +392,12 @@ Renomear no repositório → Settings → Secrets → Actions:
 | `web/next.config.ts` | ✅ |
 | `web/src/pages/_app.tsx` | ✅ |
 | `web/src/pages/_document.tsx` | ✅ |
-| `web/next-env.d.ts` | ⏳ |
-| `web/public/serve.json` | ⏳ |
-| `web/public/next.svg` | ⏳ |
-| `web/public/vercel.svg` | ⏳ |
+| `web/next-env.d.ts` | ✅ |
+| `web/public/serve.json` | ✅ |
+| `web/public/next.svg` | ✅ |
+| `web/public/vercel.svg` | ✅ |
+| `web/.next/` (diretório) | ✅ |
+| `web/out/` (diretório) | ✅ |
 
 ---
 
@@ -403,7 +405,7 @@ Renomear no repositório → Settings → Secrets → Actions:
 
 - **`yarn dev`** — ✅ funcionando em `http://localhost:3001`
 - **`yarn build`** — ✅ gera `dist/` sem erros TypeScript
-- **Fonte Open Sans** — ⏳ pendente (`globals.css`)
-- **ESLint** — ⏳ pendente (`eslint.config.mjs`)
-- **CI/CD** — ⏳ pendente (workflows + GitHub Secret)
-- **Limpeza** — ⏳ pendente (arquivos obsoletos)
+- **Fonte Open Sans** — ✅ `globals.css` com `@font-face`
+- **ESLint** — ✅ `eslint.config.mjs` sem `eslint-config-next`
+- **CI/CD** — ✅ workflows + GitHub Secret (renomear manualmente no GitHub)
+- **Limpeza** — ✅ arquivos obsoletos removidos
