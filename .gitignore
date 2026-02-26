@@ -6,3 +6,7 @@ web/node_modules
 
 server/infra/node_modules
 web/dist/
+
+server/tmp
+
+tmp/scripts
