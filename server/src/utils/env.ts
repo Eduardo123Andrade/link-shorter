@@ -6,6 +6,10 @@ const envSchema = z.object({
   HOST: z.string().default("0.0.0.0"),
   DATABASE_URL: z.url(),
   FRONTEND_BASE_URL: z.url().transform((url) => url.replace(/\/$/, '')),
+  STORAGE_DRIVER: z.enum(['local', 's3']).default('local'),
+  AWS_REGION: z.string().default('us-east-2'),
+  REPORTS_BUCKET_NAME: z.string().optional(),
+  CLOUDFRONT_REPORTS_URL: z.string().optional(),
 });
 
 const _env = envSchema.safeParse(process.env);

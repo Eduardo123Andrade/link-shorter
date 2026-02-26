@@ -10,6 +10,7 @@ import { errorHandler } from './errors/error-handler';
 import { disconnectDb } from './lib/db';
 import { registerRouter } from './router';
 import { registerSwagger, registerWebSocket } from './plugins';
+import { registerLocalStorage } from './plugins/local-storage.plugin';
 import { setupEventListeners } from './events';
 
 const app = Fastify({
@@ -47,6 +48,11 @@ const start = async () => {
     // 1. Plugins
     registerSwagger(app);
     await registerWebSocket(app);
+
+    // Serve local tmp files (only when STORAGE_DRIVER=local)
+    if (env.STORAGE_DRIVER === 'local') {
+      await registerLocalStorage(app);
+    }
 
     // 2. Error handler
     app.setErrorHandler(errorHandler);
