@@ -5,6 +5,7 @@ import {
   findLinkByShortLinkController,
   listAllLinksController,
   deleteLinkController,
+  generateLinkReportController,
 } from "../controller";
 import {
   createLinkSchema,
@@ -15,6 +16,7 @@ import {
   noContentResponseSchema,
   redirectResponseSchema,
   errorResponseSchema,
+  reportResponseSchema,
 } from "../schemas";
 
 export async function linkRouter(app: FastifyInstance) {
@@ -42,6 +44,18 @@ export async function linkRouter(app: FastifyInstance) {
       },
     },
     handler: listAllLinksController,
+  });
+
+  typedApp.get("/links/report", {
+    schema: {
+      tags: ["Links"],
+      summary: "Generate CSV report of all links",
+      response: {
+        200: reportResponseSchema,
+        500: errorResponseSchema,
+      },
+    },
+    handler: generateLinkReportController,
   });
 
   typedApp.delete("/links/:id", {

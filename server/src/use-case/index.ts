@@ -4,3 +4,4 @@ export { findLinkByShortLink } from './find-link-by-short-link.use-case';
 export { listAllLinks } from './list-all-links.use-case';
 export { registerLinkAccess } from './register-link-access.use-case';
 export { deleteLink } from './delete-link.use-case';
+export { generateLinkReport } from './generate-link-report.use-case';

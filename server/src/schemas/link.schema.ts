@@ -51,3 +51,7 @@ export const redirectResponseSchema = z
 export const errorResponseSchema = z.object({
   errors: z.record(z.string(), z.array(z.string()).optional()),
 });
+
+export const reportResponseSchema = z.object({
+  url: z.url(),
+});
