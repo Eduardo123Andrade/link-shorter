@@ -248,6 +248,67 @@ describe("Link Routes (e2e)", () => {
     });
   });
 
+  describe("GET /links/report", () => {
+    it("should return 200 with a url field", async () => {
+      const response = await app.inject({
+        method: "GET",
+        url: "/links/report",
+      });
+
+      expect(response.statusCode).toBe(HttpStatus.OK);
+      const body = response.json();
+      expect(body.url).toBeDefined();
+      expect(typeof body.url).toBe("string");
+    });
+
+    it("should generate report with links in the database", async () => {
+      await app.inject({
+        method: "POST",
+        url: "/links",
+        payload: { link: "https://www.google.com", shortLink: "google" },
+      });
+
+      const response = await app.inject({
+        method: "GET",
+        url: "/links/report",
+      });
+
+      expect(response.statusCode).toBe(HttpStatus.OK);
+      expect(response.json().url).toBeDefined();
+    });
+
+    it("should return 200 even when database is empty", async () => {
+      const response = await app.inject({
+        method: "GET",
+        url: "/links/report",
+      });
+
+      expect(response.statusCode).toBe(HttpStatus.OK);
+      expect(response.json().url).toBeDefined();
+    });
+
+    it("should return downloadable file at the reported url", async () => {
+      const reportResponse = await app.inject({
+        method: "GET",
+        url: "/links/report",
+      });
+
+      const { url } = reportResponse.json<{ url: string }>();
+
+      // Extract path from local URL (e.g. http://localhost:3333/tmp/reports/uuid.csv)
+      const urlPath = new URL(url).pathname;
+
+      const fileResponse = await app.inject({
+        method: "GET",
+        url: urlPath,
+      });
+
+      expect(fileResponse.statusCode).toBe(HttpStatus.OK);
+      expect(fileResponse.headers["content-type"]).toContain("text/csv");
+      expect(fileResponse.body).toContain("id,link,shortLink,accessCount");
+    });
+  });
+
   describe("Full flow", () => {
     it("should create, list, redirect and delete a link", async () => {
       // 1. Create
