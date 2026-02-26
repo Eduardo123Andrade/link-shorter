@@ -49,7 +49,9 @@ export async function linkRouter(app: FastifyInstance) {
   typedApp.get("/links/report", {
     schema: {
       tags: ["Links"],
-      summary: "Generate CSV report of all links",
+      summary: "Generate CSV report",
+      description:
+        "Generates a CSV file containing all shortened links with their metadata (id, original URL, short link, access count, created/updated dates). The file is stored and a download URL is returned. When using local storage the URL points to the server's `/tmp/*` route; in production it points to a CloudFront-served S3 object.",
       response: {
         200: reportResponseSchema,
         500: errorResponseSchema,
