@@ -8,6 +8,7 @@ const reportsBucket = new aws.s3.BucketV2(
   'reports-bucket',
   {
     bucket: `link-shorter-reports-${stack}`,
+    forceDestroy: true,
     tags,
   },
   resourceOptions
