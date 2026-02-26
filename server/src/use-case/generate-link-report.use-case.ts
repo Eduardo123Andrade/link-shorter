@@ -11,7 +11,7 @@ type Link = {
   updatedAt: Date;
 };
 
-const BATCH_SIZE = 10;
+const BATCH_SIZE = 100;
 const CSV_HEADER = 'id,link,shortLink,accessCount,createdAt,updatedAt';
 
 const rowToCsv = (l: Link) =>
