@@ -11,6 +11,16 @@ import { reportsBucketName, reportsCloudfrontUrl } from './reports'
 
 const stack = pulumi.getStack()
 
+const logGroup = new aws.cloudwatch.LogGroup(
+  'link-shorter-log-group',
+  {
+    name: `/ecs/link-shorter-${stack}`,
+    retentionInDays: 7,
+    tags,
+  },
+  resourceOptions
+)
+
 const cluster = new aws.ecs.Cluster(
   'link-shorter-cluster',
   {
@@ -40,8 +50,8 @@ const taskDefinition = new aws.ecs.TaskDefinition(
     taskRoleArn,
     // URLs dinâmicas vêm dos outputs do CloudFront — sem secrets necessários
     containerDefinitions: pulumi
-      .all([repositoryUrl, webCloudfrontUrl, reportsBucketName, reportsCloudfrontUrl])
-      .apply(([repoUrl, frontendUrl, bucketName, reportsUrl]) =>
+      .all([repositoryUrl, webCloudfrontUrl, reportsBucketName, reportsCloudfrontUrl, logGroup.name])
+      .apply(([repoUrl, frontendUrl, bucketName, reportsUrl, logGroupName]) =>
         JSON.stringify([
           {
             name: containerName,
@@ -54,6 +64,14 @@ const taskDefinition = new aws.ecs.TaskDefinition(
               { name: 'REPORTS_BUCKET_NAME', value: bucketName },
               { name: 'CLOUDFRONT_REPORTS_URL', value: reportsUrl },
             ],
+            logConfiguration: {
+              logDriver: 'awslogs',
+              options: {
+                'awslogs-group': logGroupName,
+                'awslogs-region': 'us-east-2',
+                'awslogs-stream-prefix': 'ecs',
+              },
+            },
           },
         ])
       ),
