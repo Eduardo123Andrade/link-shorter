@@ -1,4 +1,4 @@
-import { eq, desc, sql } from 'drizzle-orm';
+import { eq, desc, sql, gt, asc } from 'drizzle-orm';
 import { db } from '../lib/db';
 import { links } from '../db/schema';
 import { ICreateLinkInput } from '../interfaces';
@@ -61,6 +61,15 @@ const incrementAccess = async (id: string) => {
   return updatedLink;
 };
 
+const listBatch = async (cursor: string | undefined, limit: number): Promise<Link[]> => {
+  return db
+    .select()
+    .from(links)
+    .where(cursor ? gt(links.id, cursor) : undefined)
+    .orderBy(asc(links.id))
+    .limit(limit);
+};
+
 export const LinkShorterRepository = {
   save,
   findById,
@@ -68,4 +77,5 @@ export const LinkShorterRepository = {
   listAll,
   deleteById,
   incrementAccess,
+  listBatch,
 };
