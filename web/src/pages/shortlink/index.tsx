@@ -1,37 +1,31 @@
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { LogoIcon } from '@/components/LogoIcon';
 import { useValidateLink } from '@/hooks/useValidateLink';
 import { API_URL } from '@/lib/api';
 
 export default function ShortLinkPage() {
-  const router = useRouter();
-  const [path, setPath] = useState<string | null>(null);
+  const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
+
+  const { loading, isValid } = useValidateLink(slug || '');
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setPath(window.location.pathname.substring(1).replace(/\/$/, ''));
-  }, []);
-
-  const { loading, isValid } = useValidateLink(path || '');
-
-  useEffect(() => {
-    if (!path || loading) return;
+    if (!slug || loading) return;
 
     if (isValid === false) {
-      console.log('Invalid link');
-      router.replace('/404');
+      navigate('/404', { replace: true });
       return;
     }
 
     if (isValid) {
       const timer = setTimeout(() => {
-        window.location.href = `${API_URL}/${path}`;
+        window.location.href = `${API_URL}/${slug}`;
       }, 3000);
 
       return () => clearTimeout(timer);
     }
-  }, [path, loading, isValid, router]);
+  }, [slug, loading, isValid, navigate]);
 
   if (loading) {
     return null;
@@ -51,7 +45,7 @@ export default function ShortLinkPage() {
           <br />
           Nao foi redirecionado?{' '}
           <a
-            href={`${API_URL}/${path}`}
+            href={`${API_URL}/${slug}`}
             className="text-blue-base font-medium hover:underline"
           >
             Acesse aqui

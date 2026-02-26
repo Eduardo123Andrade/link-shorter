@@ -3,22 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint",
-    "build:export": "next build",
-    "preview": "serve out -l 3001",
-    "spa": "yarn build:export && yarn preview"
+    "dev": "vite --port 3001",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview --port 3001",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@phosphor-icons/react": "^2.1.10",
     "clsx": "^2.1.1",
-    "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-hook-form": "^7.71.1",
+    "react-router-dom": "^6.30.0",
     "react-toastify": "^11.0.5",
     "tailwind-merge": "^3.4.0",
     "tailwind-variants": "^3.2.2",
@@ -26,14 +23,19 @@
     "zustand": "^5.0.11"
   },
   "devDependencies": {
+    "@eslint/js": "^9.27.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^4.3.4",
     "eslint": "^9",
-    "eslint-config-next": "16.1.6",
-    "serve": "^14.2.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^16.1.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "typescript-eslint": "^8.32.1",
+    "vite": "^6.3.5"
   }
 }

@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 
 const glitchLines = Array.from({ length: 8 }).map(() => ({
   width: 60 + Math.random() * 40,
@@ -56,7 +56,7 @@ export default function NotFoundPage() {
         <p className="text-gray-400 text-sm leading-relaxed">
           O link que voce esta tentando acessar nao existe, foi removido ou e
           uma URL invalida. Saiba mais em{' '}
-          <Link href="/" className="text-blue-base font-medium underline hover:no-underline">
+          <Link to="/" className="text-blue-base font-medium underline hover:no-underline">
             brev.ly
           </Link>
           .
