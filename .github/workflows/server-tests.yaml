@@ -82,7 +82,7 @@ jobs:
         working-directory: server
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/link_shorter_integration
-        run: yarn prisma:migrate:deploy
+        run: yarn db:migrate:deploy
 
       - name: Run Integration Tests
         working-directory: server
@@ -139,7 +139,7 @@ jobs:
         working-directory: server
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/link_shorter_e2e
-        run: yarn prisma:migrate:deploy
+        run: yarn db:migrate:deploy
 
       - name: Run E2E Tests
         working-directory: server

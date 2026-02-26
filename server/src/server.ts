@@ -7,7 +7,7 @@ import {
   validatorCompiler,
 } from 'fastify-type-provider-zod';
 import { errorHandler } from './errors/error-handler';
-import { disconnectPrisma } from './lib/prisma';
+import { disconnectDb } from './lib/db';
 import { registerRouter } from './router';
 import { registerSwagger, registerWebSocket } from './plugins';
 import { setupEventListeners } from './events';
@@ -30,7 +30,7 @@ app.setSerializerCompiler(serializerCompiler);
 // Graceful shutdown
 const gracefulShutdown = async () => {
   app.log.info('Shutting down gracefully...');
-  await disconnectPrisma();
+  await disconnectDb();
   await app.close();
   process.exit(0);
 };
@@ -60,7 +60,7 @@ const start = async () => {
     app.log.info(`Swagger docs at http://${host}:${port}/docs`);
   } catch (err) {
     app.log.error(err);
-    await disconnectPrisma();
+    await disconnectDb();
     process.exit(1);
   }
 };

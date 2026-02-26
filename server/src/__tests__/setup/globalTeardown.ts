@@ -1,9 +1,13 @@
-import { disconnectPrisma } from "../../lib/prisma";
+import path from 'path';
+import dotenv from 'dotenv';
 
 export default async () => {
-  // Fecha todas as conexões do Prisma e do Pool
-  await disconnectPrisma();
+  // globalTeardown roda num processo separado sem as env vars dos workers.
+  // É necessário carregá-las antes de importar db.ts (que valida env ao ser carregado).
+  dotenv.config({ path: path.resolve(__dirname, '../../../.env.test') });
 
-  // Cleanup global resources if needed
+  const { disconnectDb } = await import('../../lib/db');
+  await disconnectDb();
+
   console.log('\n🧹 Global test teardown complete\n');
 };
