@@ -37,15 +37,20 @@ jobs:
     needs: [changes]
     if: always() && needs.changes.outputs.server_app == 'true'
     uses: ./.github/workflows/server-ci.yaml
-    with:
-      deploy: ${{ github.event_name == 'push' }}
     secrets: inherit
 
   infra:
     name: Infrastructure
     needs: [changes, server]
-    if: always() && needs.changes.outputs.server_infra == 'true' && (needs.server.result == 'success' || needs.server.result == 'skipped') && github.event_name == 'push'
+    if: always() && github.event_name == 'push' && (needs.server.result == 'success' || needs.server.result == 'skipped')
     uses: ./.github/workflows/server-infra.yaml
+    secrets: inherit
+
+  server-deploy:
+    name: Server Deploy
+    needs: [server, infra]
+    if: always() && github.event_name == 'push' && needs.server.result == 'success' && needs.infra.result == 'success'
+    uses: ./.github/workflows/server-deploy.yaml
     secrets: inherit
 
   web:
