@@ -42,14 +42,14 @@ jobs:
   infra:
     name: Infrastructure
     needs: [changes, server]
-    if: always() && github.event_name == 'push' && (needs.server.result == 'success' || needs.server.result == 'skipped')
+    if: always() && needs.changes.outputs.server_infra == 'true' && github.event_name == 'push' && (needs.server.result == 'success' || needs.server.result == 'skipped')
     uses: ./.github/workflows/server-infra.yaml
     secrets: inherit
 
   server-deploy:
     name: Server Deploy
     needs: [server, infra]
-    if: always() && github.event_name == 'push' && needs.server.result == 'success' && needs.infra.result == 'success'
+    if: always() && github.event_name == 'push' && needs.server.result == 'success' && (needs.infra.result == 'success' || needs.infra.result == 'skipped')
     uses: ./.github/workflows/server-deploy.yaml
     secrets: inherit
 
