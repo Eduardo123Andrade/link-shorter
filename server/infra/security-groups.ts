@@ -18,6 +18,13 @@ const albSg = new aws.ec2.SecurityGroup(
         cidrBlocks: ['0.0.0.0/0'],
         description: 'HTTP from anywhere',
       },
+      {
+        protocol: 'tcp',
+        fromPort: 443,
+        toPort: 443,
+        cidrBlocks: ['0.0.0.0/0'],
+        description: 'HTTPS from anywhere',
+      },
     ],
     egress: [
       {
