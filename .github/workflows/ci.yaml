@@ -29,6 +29,8 @@ jobs:
               - '!server/infra/**'
             server_infra:
               - 'server/infra/**'
+              - '!server/infra/node_modules/**'
+              - '!server/infra/base/node_modules/**'
             web:
               - 'web/**'
 

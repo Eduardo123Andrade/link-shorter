@@ -7,6 +7,8 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
+  PULUMI_BACKEND_URL: ${{ secrets.PULUMI_BACKEND_URL }}
+  PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
 
 jobs:
   resolve-env:
@@ -29,6 +31,8 @@ jobs:
     needs: [resolve-env]
     runs-on: ubuntu-latest
     environment: ${{ needs.resolve-env.outputs.environment }}
+    outputs:
+      tag: ${{ steps.generate-tag.outputs.tag }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -74,16 +78,22 @@ jobs:
           echo "**Tag:** $IMAGE_TAG" >> $GITHUB_STEP_SUMMARY
 
   ecs:
-    name: Deploy to ECS
+    name: Deploy to ECS (via Pulumi)
     needs: [push, resolve-env]
     runs-on: ubuntu-latest
     environment: ${{ needs.resolve-env.outputs.environment }}
     steps:
-      - name: Generate tag
-        id: generate-tag
-        run: |
-          SHA=$(echo $GITHUB_SHA | head -c7)
-          echo "tag=$SHA" >> $GITHUB_OUTPUT
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+
+      - name: Install infra dependencies
+        working-directory: server/infra
+        run: yarn install --frozen-lockfile
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -92,39 +102,26 @@ jobs:
           aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Login to Amazon ECR
-        id: ecr-login
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Download current task definition
-        run: |
-          aws ecs describe-task-definition \
-            --task-definition link-shorter-${{ needs.resolve-env.outputs.environment }} \
-            --query taskDefinition \
-            > task-definition.json
-
-      - name: Render new image in task definition
-        id: render-task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
+      - name: Pulumi Up with new image tag
+        uses: pulumi/actions@v5
         with:
-          task-definition: task-definition.json
-          container-name: link-shorter-${{ needs.resolve-env.outputs.environment }}
-          image: ${{ steps.ecr-login.outputs.registry }}/link-shorter-${{ needs.resolve-env.outputs.environment }}:${{ steps.generate-tag.outputs.tag }}
-
-      - name: Deploy to ECS
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
-        with:
-          task-definition: ${{ steps.render-task-def.outputs.task-definition }}
-          service: link-shorter-service-${{ needs.resolve-env.outputs.environment }}
-          cluster: link-shorter-cluster-${{ needs.resolve-env.outputs.environment }}
-          wait-for-service-stability: true
+          command: up
+          stack-name: organization/link-shorter/${{ needs.resolve-env.outputs.environment }}
+          work-dir: server/infra
+          config-map: |
+            link-shorter:imageTag=${{ needs.push.outputs.tag }}
+        env:
+          PULUMI_BACKEND_URL: ${{ env.PULUMI_BACKEND_URL }}
+          PULUMI_CONFIG_PASSPHRASE: ${{ env.PULUMI_CONFIG_PASSPHRASE }}
+          PORT: ${{ secrets.PORT }}
+          NODE_ENV: production
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Deploy Summary
         run: |
           echo "## Deploy Summary (${{ needs.resolve-env.outputs.environment }})" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "✅ Deployed to ECS successfully" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Deployed to ECS via Pulumi" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Cluster:** link-shorter-cluster-${{ needs.resolve-env.outputs.environment }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Service:** link-shorter-service-${{ needs.resolve-env.outputs.environment }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Image tag:** ${{ steps.generate-tag.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Stack:** link-shorter/${{ needs.resolve-env.outputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Image tag:** ${{ needs.push.outputs.tag }}" >> $GITHUB_STEP_SUMMARY

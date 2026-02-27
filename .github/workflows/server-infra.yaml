@@ -26,9 +26,44 @@ jobs:
             *)               echo "environment=dev"  >> $GITHUB_OUTPUT ;;
           esac
 
-  infra:
-    name: Provision Infrastructure
+  base:
+    name: Provision Base Infrastructure (VPC + ECR)
     needs: [resolve-env]
+    runs-on: ubuntu-latest
+    environment: ${{ needs.resolve-env.outputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+
+      - name: Install base dependencies
+        working-directory: server/infra/base
+        run: yarn install --frozen-lockfile
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Pulumi Up (base)
+        uses: pulumi/actions@v5
+        with:
+          command: up
+          stack-name: organization/link-shorter-base/${{ needs.resolve-env.outputs.environment }}
+          work-dir: server/infra/base
+        env:
+          PULUMI_BACKEND_URL: ${{ env.PULUMI_BACKEND_URL }}
+          PULUMI_CONFIG_PASSPHRASE: ${{ env.PULUMI_CONFIG_PASSPHRASE }}
+
+  app:
+    name: Provision App Infrastructure
+    needs: [resolve-env, base]
     runs-on: ubuntu-latest
     environment: ${{ needs.resolve-env.outputs.environment }}
     steps:
@@ -51,7 +86,7 @@ jobs:
           aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Pulumi Up
+      - name: Pulumi Up (app)
         uses: pulumi/actions@v5
         with:
           command: up
@@ -68,7 +103,8 @@ jobs:
         run: |
           echo "## Infrastructure Summary (${{ needs.resolve-env.outputs.environment }})" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "✅ Infrastructure provisioned successfully" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Base (VPC + ECR) provisioned" >> $GITHUB_STEP_SUMMARY
+          echo "✅ App infrastructure provisioned" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Stack:** ${{ needs.resolve-env.outputs.environment }}" >> $GITHUB_STEP_SUMMARY
           echo "**Backend:** ${{ env.PULUMI_BACKEND_URL }}" >> $GITHUB_STEP_SUMMARY
