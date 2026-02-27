@@ -2,10 +2,6 @@ name: Server CI
 
 on:
   workflow_call:
-    inputs:
-      deploy:
-        type: boolean
-        default: false
   pull_request:
 
 concurrency:
@@ -31,10 +27,3 @@ jobs:
     name: Build Image
     needs: [lint, tests]
     uses: ./.github/workflows/server-build.yaml
-
-  deploy:
-    name: Deploy
-    needs: [build]
-    if: inputs.deploy == true
-    uses: ./.github/workflows/server-deploy.yaml
-    secrets: inherit

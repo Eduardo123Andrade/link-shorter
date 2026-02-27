@@ -1,6 +1,7 @@
 import * as aws from '@pulumi/aws'
 import * as pulumi from '@pulumi/pulumi'
 import { tags, resourceOptions } from './tags'
+import { reportsBucketArn } from './reports'
 
 const stack = pulumi.getStack()
 
@@ -36,6 +37,26 @@ const taskRole = new aws.iam.Role(
     name: `link-shorter-ecs-task-${stack}`,
     assumeRolePolicy: ecsAssumeRolePolicy,
     tags,
+  },
+  resourceOptions
+)
+
+new aws.iam.RolePolicy(
+  'task-s3-reports-policy',
+  {
+    role: taskRole.id,
+    policy: reportsBucketArn.apply((arn) =>
+      JSON.stringify({
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Action: ['s3:PutObject'],
+            Resource: `${arn}/reports/*`,
+          },
+        ],
+      })
+    ),
   },
   resourceOptions
 )

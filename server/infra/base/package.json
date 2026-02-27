@@ -1,0 +1,12 @@
+{
+  "name": "link-shorter-infra-base",
+  "main": "index.ts",
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "@types/node": "^22.0.0"
+  },
+  "dependencies": {
+    "@pulumi/pulumi": "^3.0.0",
+    "@pulumi/aws": "^6.0.0"
+  }
+}

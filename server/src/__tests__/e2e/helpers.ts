@@ -6,6 +6,8 @@ import {
 import { healthRouter } from '../../router/health.router';
 import { linkRouter } from '../../router/link.router';
 import { errorHandler } from '../../errors/error-handler';
+import { registerLocalStorage } from '../../plugins/local-storage.plugin';
+import { env } from '../../utils/env';
 
 export const buildApp = async (): Promise<FastifyInstance> => {
   const app = Fastify({ logger: false });
@@ -17,6 +19,10 @@ export const buildApp = async (): Promise<FastifyInstance> => {
 
   app.register(healthRouter);
   app.register(linkRouter);
+
+  if (env.STORAGE_DRIVER === 'local') {
+    await registerLocalStorage(app);
+  }
 
   await app.ready();
 
