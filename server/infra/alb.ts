@@ -1,7 +1,7 @@
 import * as aws from '@pulumi/aws'
 import * as pulumi from '@pulumi/pulumi'
 import { tags, resourceOptions } from './tags'
-import { vpcId, publicSubnetIds } from './vpc'
+import { vpcId, publicSubnetIds } from './stack-reference'
 import { albSecurityGroupId } from './security-groups'
 
 const stack = pulumi.getStack()

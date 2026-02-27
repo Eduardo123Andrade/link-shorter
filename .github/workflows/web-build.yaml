@@ -2,6 +2,10 @@ name: Web - Build
 
 on:
   workflow_call:
+    inputs:
+      api_url:
+        type: string
+        default: ''
 
 jobs:
   build:
@@ -31,7 +35,7 @@ jobs:
       - name: Build
         working-directory: web
         env:
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_API_URL: ${{ inputs.api_url || secrets.VITE_API_URL }}
         run: yarn build
 
       - name: Upload build artifact

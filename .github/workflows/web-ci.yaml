@@ -6,6 +6,9 @@ on:
       deploy:
         type: boolean
         default: false
+      api_url:
+        type: string
+        default: ''
   pull_request:
     paths:
       - "web/**"
@@ -28,6 +31,8 @@ jobs:
     name: Build
     needs: [lint]
     uses: ./.github/workflows/web-build.yaml
+    with:
+      api_url: ${{ inputs.api_url }}
     secrets: inherit
 
   deploy:
