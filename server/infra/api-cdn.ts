@@ -1,5 +1,4 @@
 import * as aws from '@pulumi/aws'
-import * as pulumi from '@pulumi/pulumi'
 import { tags, resourceOptions } from './tags'
 import { albDnsName } from './alb'
 

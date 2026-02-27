@@ -62,4 +62,5 @@ jobs:
     uses: ./.github/workflows/web-ci.yaml
     with:
       deploy: ${{ github.event_name == 'push' }}
+      api_url: ${{ needs.infra.outputs.api_url }}
     secrets: inherit

@@ -2,6 +2,10 @@ name: Server - Infrastructure
 
 on:
   workflow_call:
+    outputs:
+      api_url:
+        description: "API CloudFront URL"
+        value: ${{ jobs.app.outputs.api_url }}
 
 env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -66,6 +70,8 @@ jobs:
     needs: [resolve-env, base]
     runs-on: ubuntu-latest
     environment: ${{ needs.resolve-env.outputs.environment }}
+    outputs:
+      api_url: ${{ steps.get-outputs.outputs.api_url }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -98,6 +104,16 @@ jobs:
           PORT: ${{ secrets.PORT }}
           NODE_ENV: production
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Get stack outputs
+        id: get-outputs
+        working-directory: server/infra
+        run: |
+          API_URL=$(pulumi stack output apiCloudfrontUrl --stack organization/link-shorter/${{ needs.resolve-env.outputs.environment }})
+          echo "api_url=$API_URL" >> $GITHUB_OUTPUT
+        env:
+          PULUMI_BACKEND_URL: ${{ env.PULUMI_BACKEND_URL }}
+          PULUMI_CONFIG_PASSPHRASE: ${{ env.PULUMI_CONFIG_PASSPHRASE }}
 
       - name: Infra Summary
         run: |
