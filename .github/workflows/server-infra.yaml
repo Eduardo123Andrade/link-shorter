@@ -71,7 +71,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ needs.resolve-env.outputs.environment }}
     outputs:
-      api_url: ${{ steps.get-outputs.outputs.api_url }}
+      api_url: ${{ steps.export-url.outputs.api_url }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -107,13 +107,19 @@ jobs:
 
       - name: Get stack outputs
         id: get-outputs
-        working-directory: server/infra
-        run: |
-          API_URL=$(pulumi stack output apiCloudfrontUrl --stack organization/link-shorter/${{ needs.resolve-env.outputs.environment }})
-          echo "api_url=$API_URL" >> $GITHUB_OUTPUT
+        uses: pulumi/actions@v5
+        with:
+          command: output
+          stack-name: organization/link-shorter/${{ needs.resolve-env.outputs.environment }}
+          work-dir: server/infra
         env:
           PULUMI_BACKEND_URL: ${{ env.PULUMI_BACKEND_URL }}
           PULUMI_CONFIG_PASSPHRASE: ${{ env.PULUMI_CONFIG_PASSPHRASE }}
+
+      - name: Export API URL
+        id: export-url
+        run: |
+          echo "api_url=${{ steps.get-outputs.outputs.apiCloudfrontUrl }}" >> $GITHUB_OUTPUT
 
       - name: Infra Summary
         run: |
