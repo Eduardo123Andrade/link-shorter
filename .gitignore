@@ -5,3 +5,8 @@ web/node_modules
 .workspace
 
 server/infra/node_modules
+web/dist/
+
+server/tmp
+
+tmp/scripts

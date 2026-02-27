@@ -1,0 +1,10 @@
+name: link-shorter-base
+description: Base infrastructure - VPC and ECR (persistent across app deploys)
+runtime:
+  name: nodejs
+  options:
+    packagemanager: yarn
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: aws-typescript

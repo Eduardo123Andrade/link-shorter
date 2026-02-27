@@ -1,7 +1,7 @@
 import * as aws from '@pulumi/aws'
 import * as pulumi from '@pulumi/pulumi'
 import { tags, resourceOptions } from './tags'
-import { vpcId } from './vpc'
+import { vpcId } from './stack-reference'
 
 const stack = pulumi.getStack()
 
@@ -17,6 +17,13 @@ const albSg = new aws.ec2.SecurityGroup(
         toPort: 80,
         cidrBlocks: ['0.0.0.0/0'],
         description: 'HTTP from anywhere',
+      },
+      {
+        protocol: 'tcp',
+        fromPort: 443,
+        toPort: 443,
+        cidrBlocks: ['0.0.0.0/0'],
+        description: 'HTTPS from anywhere',
       },
     ],
     egress: [

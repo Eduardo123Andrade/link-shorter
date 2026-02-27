@@ -1,13 +1,26 @@
 import * as aws from '@pulumi/aws'
 import * as pulumi from '@pulumi/pulumi'
 import { tags, resourceOptions } from './tags'
-import { publicSubnetIds } from './vpc'
+import { publicSubnetIds, repositoryUrl } from './stack-reference'
 import { ecsSecurityGroupId } from './security-groups'
 import { executionRoleArn, taskRoleArn } from './iam'
 import { targetGroupArn } from './alb'
-import { repositoryUrl } from './ecr'
+import { webCloudfrontUrl } from './website'
+import { reportsBucketName, reportsCloudfrontUrl } from './reports'
 
 const stack = pulumi.getStack()
+const config = new pulumi.Config()
+const imageTag = config.get('imageTag') ?? 'bootstrap'
+
+const logGroup = new aws.cloudwatch.LogGroup(
+  'link-shorter-log-group',
+  {
+    name: `/ecs/link-shorter-${stack}`,
+    retentionInDays: 7,
+    tags,
+  },
+  resourceOptions
+)
 
 const cluster = new aws.ecs.Cluster(
   'link-shorter-cluster',
@@ -20,14 +33,8 @@ const cluster = new aws.ecs.Cluster(
 
 const containerName = `link-shorter-${stack}`
 
-const envKeys = [
-  'PORT',
-  'NODE_ENV',
-  'DATABASE_URL',
-  'FRONTEND_BASE_URL',
-]
-
-const environment = envKeys.map((key) => ({
+// Env vars estáticos: lidos do process.env (GitHub Secrets via Pulumi)
+const staticEnv = ['PORT', 'NODE_ENV', 'DATABASE_URL'].map((key) => ({
   name: key,
   value: process.env[key] ?? '',
 }))
@@ -42,22 +49,34 @@ const taskDefinition = new aws.ecs.TaskDefinition(
     requiresCompatibilities: ['FARGATE'],
     executionRoleArn,
     taskRoleArn,
-    containerDefinitions: repositoryUrl.apply((repoUrl) =>
-      JSON.stringify([
-        {
-          name: containerName,
-          image: `${repoUrl}:latest`,
-          essential: true,
-          portMappings: [
-            {
-              containerPort: 3001,
-              protocol: 'tcp',
+    // URLs dinâmicas vêm dos outputs do CloudFront — sem secrets necessários
+    containerDefinitions: pulumi
+      .all([repositoryUrl, webCloudfrontUrl, reportsBucketName, reportsCloudfrontUrl, logGroup.name])
+      .apply(([repoUrl, frontendUrl, bucketName, reportsUrl, logGroupName]) =>
+        JSON.stringify([
+          {
+            name: containerName,
+            image: `${repoUrl}:${imageTag}`,
+            essential: true,
+            portMappings: [{ containerPort: 3001, protocol: 'tcp' }],
+            environment: [
+              ...staticEnv,
+              { name: 'STORAGE_DRIVER', value: 's3' },
+              { name: 'FRONTEND_BASE_URL', value: frontendUrl },
+              { name: 'REPORTS_BUCKET_NAME', value: bucketName },
+              { name: 'CLOUDFRONT_REPORTS_URL', value: reportsUrl },
+            ],
+            logConfiguration: {
+              logDriver: 'awslogs',
+              options: {
+                'awslogs-group': logGroupName,
+                'awslogs-region': 'us-east-2',
+                'awslogs-stream-prefix': 'ecs',
+              },
             },
-          ],
-          environment,
-        },
-      ])
-    ),
+          },
+        ])
+      ),
     tags,
   },
   resourceOptions
@@ -87,7 +106,7 @@ const service = new aws.ecs.Service(
   },
   {
     ...resourceOptions,
-    ignoreChanges: [...(resourceOptions.ignoreChanges || []), 'taskDefinition', 'desiredCount'],
+    ignoreChanges: [...(resourceOptions.ignoreChanges || []), 'desiredCount'],
   }
 )
 

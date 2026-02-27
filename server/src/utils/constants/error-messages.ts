@@ -20,6 +20,9 @@ export const ERROR_MESSAGES = {
   DATABASE_ERROR: "Erro no banco de dados",
   CONNECTION_ERROR: "Erro de conexão com o banco de dados",
 
+  // Report errors
+  REPORT_GENERATION_FAILED: 'Erro ao gerar o relatório CSV',
+
   // Generic errors
   INTERNAL_SERVER_ERROR: "Erro interno do servidor",
   BAD_REQUEST: "Requisição inválida",

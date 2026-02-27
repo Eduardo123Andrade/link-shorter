@@ -7,16 +7,14 @@ COPY package.json yarn.lock ./
 
 RUN yarn install --frozen-lockfile --production
 
-# Stage 2: Build (install all deps, generate prisma client, compile TS)
+# Stage 2: Build (install all deps, compile TS)
 FROM node:22-alpine AS builder
 
 WORKDIR /app
 
 COPY package.json yarn.lock ./
-COPY prisma ./prisma/
 
 RUN yarn install --frozen-lockfile
-RUN yarn prisma:generate
 
 COPY . .
 RUN yarn build
@@ -33,16 +31,11 @@ COPY package.json ./
 # Copy production node_modules from deps stage
 COPY --from=deps /app/node_modules ./node_modules
 
-# Override with the prisma generated client from builder
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma/client ./node_modules/@prisma/client
-
-# Copy prisma schema and config (needed at runtime for migrations)
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/prisma.config.ts ./
-
 # Copy compiled output
 COPY --from=builder /app/dist ./dist
+
+# Copy Drizzle migrations (needed at runtime for migrate.js)
+COPY --from=builder /app/drizzle ./drizzle
 
 EXPOSE 3000
 

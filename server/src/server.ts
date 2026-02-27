@@ -7,9 +7,10 @@ import {
   validatorCompiler,
 } from 'fastify-type-provider-zod';
 import { errorHandler } from './errors/error-handler';
-import { disconnectPrisma } from './lib/prisma';
+import { disconnectDb } from './lib/db';
 import { registerRouter } from './router';
 import { registerSwagger, registerWebSocket } from './plugins';
+import { registerLocalStorage } from './plugins/local-storage.plugin';
 import { setupEventListeners } from './events';
 
 const app = Fastify({
@@ -30,7 +31,7 @@ app.setSerializerCompiler(serializerCompiler);
 // Graceful shutdown
 const gracefulShutdown = async () => {
   app.log.info('Shutting down gracefully...');
-  await disconnectPrisma();
+  await disconnectDb();
   await app.close();
   process.exit(0);
 };
@@ -48,6 +49,11 @@ const start = async () => {
     registerSwagger(app);
     await registerWebSocket(app);
 
+    // Serve local tmp files (only when STORAGE_DRIVER=local)
+    if (env.STORAGE_DRIVER === 'local') {
+      await registerLocalStorage(app);
+    }
+
     // 2. Error handler
     app.setErrorHandler(errorHandler);
 
@@ -60,7 +66,7 @@ const start = async () => {
     app.log.info(`Swagger docs at http://${host}:${port}/docs`);
   } catch (err) {
     app.log.error(err);
-    await disconnectPrisma();
+    await disconnectDb();
     process.exit(1);
   }
 };

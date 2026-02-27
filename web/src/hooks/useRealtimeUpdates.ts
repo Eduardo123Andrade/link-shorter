@@ -18,11 +18,12 @@ export function useRealtimeUpdates() {
       socket.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
-          
+
           if (data.type === 'LINK_STATS_UPDATED') {
             const { linkId, accessCount } = data.payload;
             updateLinkStats(linkId, accessCount);
           }
+          //eslint-disable-next-line
         } catch { }
       };
 
