@@ -65,9 +65,45 @@ jobs:
           PULUMI_BACKEND_URL: ${{ env.PULUMI_BACKEND_URL }}
           PULUMI_CONFIG_PASSPHRASE: ${{ env.PULUMI_CONFIG_PASSPHRASE }}
 
+  bootstrap-image:
+    name: Push Bootstrap Image to ECR
+    needs: [resolve-env, base]
+    runs-on: ubuntu-latest
+    environment: ${{ needs.resolve-env.outputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Push bootstrap image if not exists
+        env:
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+          ECR_REPOSITORY: link-shorter-${{ needs.resolve-env.outputs.environment }}
+        run: |
+          if aws ecr describe-images \
+            --repository-name "$ECR_REPOSITORY" \
+            --image-ids imageTag=bootstrap \
+            --output text 2>/dev/null; then
+            echo "Bootstrap image already exists, skipping build."
+          else
+            echo "Bootstrap image not found — building and pushing..."
+            docker build -t "$ECR_REGISTRY/$ECR_REPOSITORY:bootstrap" ./server
+            docker push "$ECR_REGISTRY/$ECR_REPOSITORY:bootstrap"
+          fi
+
   app:
     name: Provision App Infrastructure
-    needs: [resolve-env, base]
+    needs: [resolve-env, bootstrap-image]
     runs-on: ubuntu-latest
     environment: ${{ needs.resolve-env.outputs.environment }}
     outputs:

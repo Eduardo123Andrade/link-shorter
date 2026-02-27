@@ -1,0 +1,118 @@
+name: Server - Migrate Database
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      image_tag:
+        required: true
+        type: string
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+
+jobs:
+  migrate:
+    name: Run Database Migrations
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Fetch network config from ECS service
+        id: network
+        env:
+          ENV: ${{ inputs.environment }}
+        run: |
+          NETWORK=$(aws ecs describe-services \
+            --cluster "link-shorter-cluster-${ENV}" \
+            --services "link-shorter-service-${ENV}" \
+            --query 'services[0].networkConfiguration.awsvpcConfiguration' \
+            --output json)
+
+          echo "subnets=$(echo "$NETWORK" | jq -c '.subnets')" >> $GITHUB_OUTPUT
+          echo "security_groups=$(echo "$NETWORK" | jq -c '.securityGroups')" >> $GITHUB_OUTPUT
+          echo "assign_public_ip=$(echo "$NETWORK" | jq -r '.assignPublicIp')" >> $GITHUB_OUTPUT
+
+      - name: Run migration task on ECS
+        id: run-task
+        env:
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+          ENV: ${{ inputs.environment }}
+          IMAGE_TAG: ${{ inputs.image_tag }}
+          SUBNETS: ${{ steps.network.outputs.subnets }}
+          SECURITY_GROUPS: ${{ steps.network.outputs.security_groups }}
+          ASSIGN_PUBLIC_IP: ${{ steps.network.outputs.assign_public_ip }}
+        run: |
+          IMAGE="${ECR_REGISTRY}/link-shorter-${ENV}:${IMAGE_TAG}"
+          CONTAINER_NAME="link-shorter-${ENV}"
+
+          NETWORK_CONFIG=$(jq -n \
+            --argjson subnets "$SUBNETS" \
+            --argjson sgs "$SECURITY_GROUPS" \
+            --arg pip "$ASSIGN_PUBLIC_IP" \
+            '{awsvpcConfiguration: {subnets: $subnets, securityGroups: $sgs, assignPublicIp: $pip}}')
+
+          OVERRIDES=$(jq -n \
+            --arg name "$CONTAINER_NAME" \
+            --arg image "$IMAGE" \
+            '{containerOverrides: [{name: $name, image: $image, command: ["node", "dist/migrate.js"]}]}')
+
+          TASK_ARN=$(aws ecs run-task \
+            --cluster "link-shorter-cluster-${ENV}" \
+            --task-definition "link-shorter-${ENV}" \
+            --launch-type FARGATE \
+            --network-configuration "$NETWORK_CONFIG" \
+            --overrides "$OVERRIDES" \
+            --query 'tasks[0].taskArn' \
+            --output text)
+
+          echo "task_arn=$TASK_ARN" >> $GITHUB_OUTPUT
+          echo "Running migration task: $TASK_ARN"
+
+      - name: Wait for migration to complete
+        env:
+          ENV: ${{ inputs.environment }}
+        run: |
+          aws ecs wait tasks-stopped \
+            --cluster "link-shorter-cluster-${ENV}" \
+            --tasks "${{ steps.run-task.outputs.task_arn }}"
+
+      - name: Verify migration result
+        env:
+          ENV: ${{ inputs.environment }}
+        run: |
+          EXIT_CODE=$(aws ecs describe-tasks \
+            --cluster "link-shorter-cluster-${ENV}" \
+            --tasks "${{ steps.run-task.outputs.task_arn }}" \
+            --query 'tasks[0].containers[0].exitCode' \
+            --output text)
+
+          if [ "$EXIT_CODE" != "0" ]; then
+            echo "Migration failed with exit code: $EXIT_CODE"
+            exit 1
+          fi
+
+          echo "Migration completed successfully (exit code: $EXIT_CODE)"
+
+      - name: Migration Summary
+        if: always()
+        run: |
+          echo "## Migration Summary (${{ inputs.environment }})" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** ${{ inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Image tag:** ${{ inputs.image_tag }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Task ARN:** ${{ steps.run-task.outputs.task_arn }}" >> $GITHUB_STEP_SUMMARY

@@ -77,9 +77,18 @@ jobs:
           echo "**Registry:** $ECR_REGISTRY/$ECR_REPOSITORY" >> $GITHUB_STEP_SUMMARY
           echo "**Tag:** $IMAGE_TAG" >> $GITHUB_STEP_SUMMARY
 
+  migrate:
+    name: Database Migrations
+    needs: [push, resolve-env]
+    uses: ./.github/workflows/server-migrate.yaml
+    with:
+      environment: ${{ needs.resolve-env.outputs.environment }}
+      image_tag: ${{ needs.push.outputs.tag }}
+    secrets: inherit
+
   ecs:
     name: Deploy to ECS (via Pulumi)
-    needs: [push, resolve-env]
+    needs: [push, migrate, resolve-env]
     runs-on: ubuntu-latest
     environment: ${{ needs.resolve-env.outputs.environment }}
     steps:
