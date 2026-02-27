@@ -8,6 +8,7 @@ const websiteBucket = new aws.s3.BucketV2(
   'link-shorter-web',
   {
     bucket: `link-shorter-web-${stack}`,
+    forceDestroy: true,
     tags,
   },
   resourceOptions

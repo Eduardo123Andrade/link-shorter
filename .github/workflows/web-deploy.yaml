@@ -47,6 +47,15 @@ jobs:
         run: |
           aws s3 sync dist/ s3://link-shorter-web-${{ needs.resolve-env.outputs.environment }} --delete
 
+      - name: Invalidate CloudFront cache
+        run: |
+          DISTRIBUTION_ID=$(aws cloudfront list-distributions \
+            --query "DistributionList.Items[?Origins.Items[0].DomainName=='link-shorter-web-${{ needs.resolve-env.outputs.environment }}.s3-website.${{ env.AWS_REGION }}.amazonaws.com'].Id" \
+            --output text)
+          aws cloudfront create-invalidation \
+            --distribution-id "$DISTRIBUTION_ID" \
+            --paths "/*"
+
       - name: Deploy Summary
         run: |
           echo "## Web Deploy Summary (${{ needs.resolve-env.outputs.environment }})" >> $GITHUB_STEP_SUMMARY
