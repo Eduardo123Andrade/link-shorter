@@ -39,4 +39,4 @@ COPY --from=builder /app/drizzle ./drizzle
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "node dist/migrate.js && node dist/server.js"]
+CMD ["node", "dist/server.js"]
