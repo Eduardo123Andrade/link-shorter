@@ -61,6 +61,7 @@ const taskDefinition = new aws.ecs.TaskDefinition(
             portMappings: [{ containerPort: 3001, protocol: 'tcp' }],
             environment: [
               ...staticEnv,
+              { name: 'STORAGE_DRIVER', value: 's3' },
               { name: 'FRONTEND_BASE_URL', value: frontendUrl },
               { name: 'REPORTS_BUCKET_NAME', value: bucketName },
               { name: 'CLOUDFRONT_REPORTS_URL', value: reportsUrl },
