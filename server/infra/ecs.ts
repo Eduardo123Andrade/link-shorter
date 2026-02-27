@@ -1,15 +1,16 @@
 import * as aws from '@pulumi/aws'
 import * as pulumi from '@pulumi/pulumi'
 import { tags, resourceOptions } from './tags'
-import { publicSubnetIds } from './vpc'
+import { publicSubnetIds, repositoryUrl } from './stack-reference'
 import { ecsSecurityGroupId } from './security-groups'
 import { executionRoleArn, taskRoleArn } from './iam'
 import { targetGroupArn } from './alb'
-import { repositoryUrl } from './ecr'
 import { webCloudfrontUrl } from './website'
 import { reportsBucketName, reportsCloudfrontUrl } from './reports'
 
 const stack = pulumi.getStack()
+const config = new pulumi.Config()
+const imageTag = config.get('imageTag') ?? 'bootstrap'
 
 const logGroup = new aws.cloudwatch.LogGroup(
   'link-shorter-log-group',
@@ -55,7 +56,7 @@ const taskDefinition = new aws.ecs.TaskDefinition(
         JSON.stringify([
           {
             name: containerName,
-            image: `${repoUrl}:latest`,
+            image: `${repoUrl}:${imageTag}`,
             essential: true,
             portMappings: [{ containerPort: 3001, protocol: 'tcp' }],
             environment: [
@@ -104,7 +105,7 @@ const service = new aws.ecs.Service(
   },
   {
     ...resourceOptions,
-    ignoreChanges: [...(resourceOptions.ignoreChanges || []), 'taskDefinition', 'desiredCount'],
+    ignoreChanges: [...(resourceOptions.ignoreChanges || []), 'desiredCount'],
   }
 )
 

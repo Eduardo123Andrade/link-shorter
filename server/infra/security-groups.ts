@@ -1,7 +1,7 @@
 import * as aws from '@pulumi/aws'
 import * as pulumi from '@pulumi/pulumi'
 import { tags, resourceOptions } from './tags'
-import { vpcId } from './vpc'
+import { vpcId } from './stack-reference'
 
 const stack = pulumi.getStack()
 

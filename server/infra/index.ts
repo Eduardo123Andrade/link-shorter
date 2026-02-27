@@ -1,5 +1,3 @@
-export { repositoryUrl, repositoryName } from './ecr'
-export { vpcId, publicSubnetIds } from './vpc'
 export { albSecurityGroupId, ecsSecurityGroupId } from './security-groups'
 export { executionRoleArn, taskRoleArn } from './iam'
 export { albDnsName, albArn, targetGroupArn, publicUrl } from './alb'
