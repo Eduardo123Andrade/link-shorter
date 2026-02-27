@@ -1,3 +1,4 @@
 config:
   aws:region: us-east-2
-  encryptionsalt: v1:4nQlEE8UYsg=:v1:j5M4+DLrbh57Q9mN:4HVEGP3RIcWuQpVcOiLZrHFwt436uw==
+  link-shorter-base:encryptionsalt: v1:4nQlEE8UYsg=:v1:j5M4+DLrbh57Q9mN:4HVEGP3RIcWuQpVcOiLZrHFwt436uw==
+encryptionsalt: v1:B6d3f6zKdlI=:v1:rSo+aXfa2u1fKn9V:qUo+7WElWnS4Wjl06K1BPGI8viwOqg==
