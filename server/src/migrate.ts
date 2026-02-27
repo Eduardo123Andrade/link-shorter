@@ -4,13 +4,18 @@ import pg from 'pg';
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
-import { env } from './utils/env';
 
 const { Pool } = pg;
 const MIGRATIONS_FOLDER = './drizzle';
 
+const DATABASE_URL = process.env.DATABASE_URL;
+if (!DATABASE_URL) {
+  console.error('Missing DATABASE_URL environment variable');
+  process.exit(1);
+}
+
 const run = async () => {
-  const pool = new Pool({ connectionString: env.DATABASE_URL });
+  const pool = new Pool({ connectionString: DATABASE_URL });
   const client = await pool.connect();
 
   try {

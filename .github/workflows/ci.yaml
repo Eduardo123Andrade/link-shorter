@@ -57,10 +57,10 @@ jobs:
 
   web:
     name: Web CI
-    needs: [changes, infra]
-    if: always() && (needs.changes.outputs.web == 'true' || needs.infra.result == 'success') && (needs.infra.result == 'success' || needs.infra.result == 'skipped')
+    needs: [changes, infra, server-deploy]
+    if: always() && (needs.changes.outputs.web == 'true' || needs.infra.result == 'success' || needs.server-deploy.result == 'success') && (needs.infra.result == 'success' || needs.infra.result == 'skipped') && (needs.server-deploy.result == 'success' || needs.server-deploy.result == 'skipped')
     uses: ./.github/workflows/web-ci.yaml
     with:
       deploy: ${{ github.event_name == 'push' }}
-      api_url: ${{ needs.infra.outputs.api_url }}
+      api_url: ${{ needs.infra.outputs.api_url || needs.server-deploy.outputs.api_url }}
     secrets: inherit
