@@ -24,13 +24,13 @@ jobs:
         uses: actions/cache@v4
         with:
           path: server/node_modules
-          key: ${{ runner.os }}-server-node-${{ steps.cache-week.outputs.week }}-${{ hashFiles('server/yarn.lock') }}
+          key: ${{ runner.os }}-server-node-${{ steps.cache-week.outputs.week }}-${{ hashFiles('server/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-server-node-${{ steps.cache-week.outputs.week }}-
 
       - name: Run ESLint
         working-directory: server
-        run: yarn lint
+        run: npm run lint
 
       - name: Lint Summary
         run: |

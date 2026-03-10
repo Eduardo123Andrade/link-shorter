@@ -99,7 +99,7 @@ jobs:
 
       - name: Install infra dependencies
         working-directory: server/infra
-        run: yarn install --frozen-lockfile
+        run: npm ci
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
