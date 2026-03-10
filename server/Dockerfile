@@ -3,21 +3,21 @@ FROM node:22-alpine AS deps
 
 WORKDIR /app
 
-COPY package.json yarn.lock ./
+COPY package.json package-lock.json ./
 
-RUN yarn install --frozen-lockfile --production
+RUN npm ci --omit=dev
 
 # Stage 2: Build (install all deps, compile TS)
 FROM node:22-alpine AS builder
 
 WORKDIR /app
 
-COPY package.json yarn.lock ./
+COPY package.json package-lock.json ./
 
-RUN yarn install --frozen-lockfile
+RUN npm ci
 
 COPY . .
-RUN yarn build
+RUN npm run build
 
 # Stage 3: Production image (lean, no dev dependencies, no source)
 FROM node:22-alpine AS production
