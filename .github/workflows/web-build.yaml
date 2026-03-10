@@ -28,7 +28,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: web/node_modules
-          key: ${{ runner.os }}-web-node-${{ steps.cache-week.outputs.week }}-${{ hashFiles('web/yarn.lock') }}
+          key: ${{ runner.os }}-web-node-${{ steps.cache-week.outputs.week }}-${{ hashFiles('web/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-web-node-${{ steps.cache-week.outputs.week }}-
 
@@ -36,7 +36,7 @@ jobs:
         working-directory: web
         env:
           VITE_API_URL: ${{ inputs.api_url || secrets.VITE_API_URL }}
-        run: yarn build
+        run: npm run build
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4

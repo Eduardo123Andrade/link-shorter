@@ -24,7 +24,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: server/node_modules
-          key: ${{ runner.os }}-server-node-${{ steps.cache-week.outputs.week }}-${{ hashFiles('server/yarn.lock') }}
+          key: ${{ runner.os }}-server-node-${{ steps.cache-week.outputs.week }}-${{ hashFiles('server/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-server-node-${{ steps.cache-week.outputs.week }}-
 
@@ -32,7 +32,7 @@ jobs:
         working-directory: server
         env:
           NODE_ENV: test
-        run: yarn test:unit
+        run: npm run test:unit
 
       - name: Unit Test Summary
         run: |
@@ -74,7 +74,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: server/node_modules
-          key: ${{ runner.os }}-server-node-${{ steps.cache-week.outputs.week }}-${{ hashFiles('server/yarn.lock') }}
+          key: ${{ runner.os }}-server-node-${{ steps.cache-week.outputs.week }}-${{ hashFiles('server/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-server-node-${{ steps.cache-week.outputs.week }}-
 
@@ -82,14 +82,14 @@ jobs:
         working-directory: server
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/link_shorter_integration
-        run: yarn db:migrate:deploy
+        run: npm run db:migrate:deploy
 
       - name: Run Integration Tests
         working-directory: server
         env:
           NODE_ENV: test
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/link_shorter_integration
-        run: yarn test:integration
+        run: npm run test:integration
 
       - name: Integration Test Summary
         run: |
@@ -131,7 +131,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: server/node_modules
-          key: ${{ runner.os }}-server-node-${{ steps.cache-week.outputs.week }}-${{ hashFiles('server/yarn.lock') }}
+          key: ${{ runner.os }}-server-node-${{ steps.cache-week.outputs.week }}-${{ hashFiles('server/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-server-node-${{ steps.cache-week.outputs.week }}-
 
@@ -139,14 +139,14 @@ jobs:
         working-directory: server
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/link_shorter_e2e
-        run: yarn db:migrate:deploy
+        run: npm run db:migrate:deploy
 
       - name: Run E2E Tests
         working-directory: server
         env:
           NODE_ENV: test
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/link_shorter_e2e
-        run: yarn test:e2e
+        run: npm run test:e2e
 
       - name: E2E Test Summary
         run: |

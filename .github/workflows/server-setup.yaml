@@ -25,12 +25,12 @@ jobs:
         uses: actions/cache@v4
         with:
           path: server/node_modules
-          key: ${{ runner.os }}-server-node-${{ steps.cache-week.outputs.week }}-${{ hashFiles('server/yarn.lock') }}
+          key: ${{ runner.os }}-server-node-${{ steps.cache-week.outputs.week }}-${{ hashFiles('server/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-server-node-${{ steps.cache-week.outputs.week }}-
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         working-directory: server
-        run: yarn install --frozen-lockfile
+        run: npm ci
 
